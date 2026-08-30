@@ -23,9 +23,11 @@
         <a href="#flow">02 · 默认流程</a>
         <a href="#revival">03 · 冷恢复</a>
         <a href="#layers">04 · Ownership</a>
-        <a href="#workflow">05 · 证据升级</a>
-        <a href="#layout">06 · 参考目录</a>
-        <a href="#fidelity">07 · Fidelity</a>
+        <a href="#time">05 · 时间状态</a>
+        <a href="#workflow">06 · 证据升级</a>
+        <a href="#evaluation">07 · Evaluation</a>
+        <a href="#layout">08 · 参考目录</a>
+        <a href="#fidelity">09 · Fidelity</a>
       </nav>
     </aside>
 
@@ -122,6 +124,20 @@
         </div>
       </section>
 
+      <section id="time">
+        <div class="section-head">
+          <h2>时间是证据，不是固定 TTL</h2>
+          <p>不同事实的变化速度不同；预期复查点已过，不等于系统有证据证明状态已经反转。</p>
+        </div>
+        <div class="layer-grid">
+          <article class="card"><span class="tag">OBSERVE</span><h3>observed_at</h3><p>记录观察发生的时间；它回答“我们什么时候看到这个状态”，不是自动失效计时器。</p></article>
+          <article class="card"><span class="tag">VALIDITY</span><h3>valid_from / valid_to</h3><p>只保存真正已知的适用区间。终点未知时保持为空，不用猜测性的 TTL 补齐。</p></article>
+          <article class="card"><span class="tag">CONFIRM</span><h3>last_confirmed_at</h3><p>记录同一状态最近一次明确确认；collection 的 reviewed_at 不能代替事实确认。</p></article>
+          <article class="card"><span class="tag">CHECKPOINT</span><h3>expected_resolution_at</h3><p>表示预计复查或获得结果的日期。超过它只添加可见提示，不静默改写状态。</p></article>
+        </div>
+        <div class="callout"><div aria-hidden="true">◷</div><p><strong>可测试规则：</strong>注入 <span class="mono">as_of</span>；基础排名保持不变，只在 checkpoint 已过且没有后续确认时附加解释性时间标签。</p></div>
+      </section>
+
       <section id="workflow">
         <div class="section-head">
           <h2>证据升级工作流</h2>
@@ -141,6 +157,28 @@
         </div>
       </section>
 
+      <section id="evaluation">
+        <div class="section-head">
+          <h2>把必须全绿与用于发现问题的 suite 分开</h2>
+          <p>测试失败的含义必须清楚；异构 ranker 的 raw score 也不能被假装成统一概率。</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Lane</th><th>用途</th><th>运行语义</th><th>晋升规则</th></tr></thead>
+            <tbody>
+              <tr><td>Regression</td><td>保护已经承诺的行为</td><td>正常运行必须全绿</td><td>只接收已经修复并稳定的 case</td></tr>
+              <tr><td>Challenge / probe</td><td>保存真实 miss 与人工 contrast</td><td>允许显式报告已知失败</td><td>修复后再进入 regression</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="layer-grid">
+          <article class="card"><span class="tag">STRONG</span><h3>provenance_supported</h3><p>候选具有 canonical source link 或明确 provenance；这是证据形状标签，不是置信概率。</p></article>
+          <article class="card"><span class="tag">CONTEXT</span><h3>structured_context</h3><p>Topic、entity、state 或 decision 字段提供支持，适合解释为什么被召回。</p></article>
+          <article class="card"><span class="tag">WEAK</span><h3>lexical_only</h3><p>只有措辞重合，没有更强结构信号；应测量是否造成 forbidden hit 或 packet 污染。</p></article>
+          <article class="card"><span class="tag">TRIAGE</span><h3>SKIP miss ownership</h3><p>先归上层语义 triage；从少量人工 contrast 和真实漏检开始，不自动生成海量无语境查询。</p></article>
+        </div>
+      </section>
+
       <section id="layout">
         <div class="section-head">
           <h2>参考目录结构</h2>
@@ -153,7 +191,7 @@
           </details>
           <details open>
             <summary>Derived 与 replaceable layers</summary>
-            <div class="tree"><b>memory-system/</b><br>├── retrieval/ <span>planner、ranking、context builder</span><br>├── derived/<br>│   ├── sources.jsonl<br>│   ├── chunks.jsonl<br>│   ├── current-states.json<br>│   ├── decisions.json<br>│   └── traces/<br>├── scripts/ <span>build、search、verify</span><br>└── tests/ <span>behavior、privacy、provenance</span></div>
+            <div class="tree"><b>memory-system/</b><br>├── retrieval/ <span>planner、ranking、context builder</span><br>├── derived/<br>│   ├── sources.jsonl<br>│   ├── chunks.jsonl<br>│   ├── current-states.json<br>│   ├── decisions.json<br>│   └── traces/<br>├── scripts/ <span>build、search、verify</span><br>└── tests/<br>    ├── regression/ <span>必须全绿</span><br>    └── challenge/ <span>显式已知失败</span></div>
           </details>
         </div>
       </section>

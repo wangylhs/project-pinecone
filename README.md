@@ -17,6 +17,9 @@ The architecture covers:
 
 - durable sources versus rebuildable retrieval data;
 - `RETRIEVE / ASK / SKIP` and bounded context;
+- time-aware current state without fixed TTLs, with injectable evaluation dates;
+- separate regression and challenge/probe evaluation lanes;
+- explainable weak-evidence labels for heterogeneous rankers;
 - metadata-only raw catalogs and default-off cold retrieval;
 - targeted source revival with integrity verification;
 - ownership, evidence fidelity, privacy, and failure boundaries.
@@ -30,3 +33,5 @@ These are generalized, sanitized reference materials. They intentionally omit pr
 ## Status
 
 Seed stage. Keep it small, inspectable, privacy-aware, and easy to rebuild.
+
+The current reference deliberately stays file-backed. It does not require a database, embeddings, or a retrieval platform before measured failures justify one.

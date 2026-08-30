@@ -23,9 +23,11 @@
         <a href="#flow">02 · Default flow</a>
         <a href="#revival">03 · Cold revival</a>
         <a href="#layers">04 · Ownership</a>
-        <a href="#workflow">05 · Escalation</a>
-        <a href="#layout">06 · Reference layout</a>
-        <a href="#fidelity">07 · Fidelity</a>
+        <a href="#time">05 · Temporal state</a>
+        <a href="#workflow">06 · Escalation</a>
+        <a href="#evaluation">07 · Evaluation</a>
+        <a href="#layout">08 · Reference layout</a>
+        <a href="#fidelity">09 · Fidelity</a>
       </nav>
     </aside>
 
@@ -122,6 +124,20 @@
         </div>
       </section>
 
+      <section id="time">
+        <div class="section-head">
+          <h2>Time is evidence, not a fixed TTL</h2>
+          <p>Facts change at different rates. Passing an expected review point does not prove that the state reversed.</p>
+        </div>
+        <div class="layer-grid">
+          <article class="card"><span class="tag">OBSERVE</span><h3>observed_at</h3><p>When the observation was recorded. It answers “when did we see this?”, not “when must it expire?”</p></article>
+          <article class="card"><span class="tag">VALIDITY</span><h3>valid_from / valid_to</h3><p>Store only a genuinely known applicability interval. Leave an unknown end open instead of inventing a TTL.</p></article>
+          <article class="card"><span class="tag">CONFIRM</span><h3>last_confirmed_at</h3><p>The latest explicit confirmation of the same state. Collection reviewed_at is not a substitute.</p></article>
+          <article class="card"><span class="tag">CHECKPOINT</span><h3>expected_resolution_at</h3><p>An expected review or outcome date. Passing it adds a visible note; it does not silently rewrite state.</p></article>
+        </div>
+        <div class="callout"><div aria-hidden="true">◷</div><p><strong>Testable rule:</strong> inject <span class="mono">as_of</span>. Keep base ranking stable and add a temporal label only when the checkpoint passed without a later confirmation.</p></div>
+      </section>
+
       <section id="workflow">
         <div class="section-head">
           <h2>Evidence escalation workflow</h2>
@@ -141,6 +157,28 @@
         </div>
       </section>
 
+      <section id="evaluation">
+        <div class="section-head">
+          <h2>Separate must-pass behavior from probes that expose problems</h2>
+          <p>Failure must have an explicit meaning. Raw scores from heterogeneous rankers must not pretend to be one probability scale.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Lane</th><th>Purpose</th><th>Run semantics</th><th>Promotion rule</th></tr></thead>
+            <tbody>
+              <tr><td>Regression</td><td>Protect behavior already promised</td><td>Every normal run must pass</td><td>Accept only fixed, stable cases</td></tr>
+              <tr><td>Challenge / probe</td><td>Preserve real misses and hand-written contrasts</td><td>Known failures may be reported explicitly</td><td>Promote after the fix is stable</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="layer-grid">
+          <article class="card"><span class="tag">STRONG</span><h3>provenance_supported</h3><p>The candidate has a canonical source link or explicit provenance. This labels evidence shape, not probability.</p></article>
+          <article class="card"><span class="tag">CONTEXT</span><h3>structured_context</h3><p>Topic, entity, state, or decision fields explain why the candidate was recalled.</p></article>
+          <article class="card"><span class="tag">WEAK</span><h3>lexical_only</h3><p>Wording overlaps without stronger structure. Measure forbidden hits and packet pollution.</p></article>
+          <article class="card"><span class="tag">TRIAGE</span><h3>SKIP miss ownership</h3><p>Start at semantic triage. Use a few human contrasts and real misses, not a large generated context-free query set.</p></article>
+        </div>
+      </section>
+
       <section id="layout">
         <div class="section-head">
           <h2>Reference repository layout</h2>
@@ -153,7 +191,7 @@
           </details>
           <details open>
             <summary>Derived and replaceable layers</summary>
-            <div class="tree"><b>memory-system/</b><br>├── retrieval/ <span>planner, ranking, context builder</span><br>├── derived/<br>│   ├── sources.jsonl<br>│   ├── chunks.jsonl<br>│   ├── current-states.json<br>│   ├── decisions.json<br>│   └── traces/<br>├── scripts/ <span>build, search, verify</span><br>└── tests/ <span>behavior, privacy, provenance</span></div>
+            <div class="tree"><b>memory-system/</b><br>├── retrieval/ <span>planner, ranking, context builder</span><br>├── derived/<br>│   ├── sources.jsonl<br>│   ├── chunks.jsonl<br>│   ├── current-states.json<br>│   ├── decisions.json<br>│   └── traces/<br>├── scripts/ <span>build, search, verify</span><br>└── tests/<br>    ├── regression/ <span>must pass</span><br>    └── challenge/ <span>explicit known failures</span></div>
           </details>
         </div>
       </section>

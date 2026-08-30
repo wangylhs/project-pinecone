@@ -100,6 +100,36 @@ The assistant should inspect:
 
 Retrieval output is a locator and evidence packet. It is not a new source of truth.
 
+## Temporal state: time is evidence, not a fixed TTL
+
+Do not give every current-state record the same “expire after N days” rule. Facts change at different rates, and silence does not imply reversal. Keep the fields narrow:
+
+| Field | Meaning |
+| --- | --- |
+| `observed_at` | when the observation was recorded |
+| `valid_from` / `valid_to` | the known applicability interval; leave an unknown end open |
+| `last_confirmed_at` | the latest explicit confirmation of the same state |
+| `expected_resolution_at` | a checkpoint for review or an expected outcome, not an expiry |
+| collection `reviewed_at` | when the projection collection was maintained, not a confirmation of each fact |
+
+When query time passes `expected_resolution_at` and no later confirmation exists, the packet may add a visible `checkpoint_passed` note. It must not silently remove the candidate, rewrite the fact, or assume that the opposite state is now true.
+
+Tests should inject an `as_of` date rather than depend on the machine clock. Validate ISO date format, `last_confirmed_at >= observed_at`, and `valid_to >= valid_from`. The same candidate should keep its base ranking across different `as_of` values; only the explainable temporal note changes.
+
+## Heterogeneous scores: explain evidence shape before setting thresholds
+
+States/decisions and source chunks may use different features, rank in separate lanes, and only then be packed together. Their raw scores are not one calibrated probability space. Until measurement proves otherwise, do not apply one global threshold across lanes or use a top-1/top-2 gap to declare that evidence is sufficient.
+
+Start with inexpensive, explainable labels:
+
+- `provenance_supported`: backed by an explicit source link or canonical provenance;
+- `structured_context`: supported by topic, entity, state, or decision fields;
+- `lexical_only`: wording overlaps without stronger contextual support;
+- `checkpoint_passed`: an expected review point passed without a later confirmation;
+- `conflicting_or_superseded`: useful for history, unsafe as current state.
+
+Measure target inclusion in top-k, forbidden candidates, packet sufficiency, unrelated privacy exposure, and human-adjudicated failure categories first. Calibrate thresholds only after those measurements show that score spaces are comparable.
+
 ## Step 3: Escalate for exact evidence
 
 Use exact or private curated search when the request depends on:
@@ -214,7 +244,12 @@ Preservation does not authorize deletion of the application-owned original. Rete
 
 ## Validation model
 
-A small system should still test the behavior that matters:
+Split evaluation into two lanes with explicit ownership:
+
+- **Regression suite:** behavior already promised not to regress; every normal run must stay green.
+- **Challenge / probe suite:** hard cases taken from real misses or hand-written contrasts. Known failures may be reported openly, but they must not masquerade as a green regression run. Promote a case only after the fix is stable.
+
+A small regression suite should still test the behavior that matters:
 
 - relevant historical questions open retrieval;
 - unrelated questions do not;
@@ -228,6 +263,8 @@ A small system should still test the behavior that matters:
 - private search remains explicit and observable.
 
 Green tests are necessary, not sufficient. Verify real paths, permissions, hashes, source identity, and produced context.
+
+A `SKIP` miss belongs first to the upper LLM or semantic-triage layer: if that layer incorrectly decides that history is unnecessary, the ranker never receives candidates to order. Preserve a small set of hand-written contrast cases and real miss records before deciding whether to change triage, add a deterministic guardrail, or tune retrieval. Do not generate a large context-free query corpus merely to increase the test count.
 
 ## Deferred capabilities
 

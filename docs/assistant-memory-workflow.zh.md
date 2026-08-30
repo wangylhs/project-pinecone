@@ -100,6 +100,36 @@ curated sources
 
 Retrieval 输出是 locator 和 evidence packet，不是新的 source of truth。
 
+## 时间状态：时间是证据，不是固定 TTL
+
+不要为所有 current state 设置统一的“过 N 天自动失效”。不同事实的变化速度不同，而且沉默不等于反转。使用窄而明确的字段：
+
+| 字段 | 语义 |
+| --- | --- |
+| `observed_at` | 这条观察被记录的时间 |
+| `valid_from` / `valid_to` | 已知的适用区间；未知终点保持为空 |
+| `last_confirmed_at` | 同一状态最近一次被明确确认的时间 |
+| `expected_resolution_at` | 预计应复查或获得结果的 checkpoint，不是 expiry |
+| collection `reviewed_at` | projection 集合被维护的日期，不替代单条事实确认 |
+
+当查询时间超过 `expected_resolution_at`，且没有 checkpoint 之后的确认时，可以在 packet 中加入可见的 `checkpoint_passed` 提示；不要仅因此删除候选、改写事实或假设状态已经相反。
+
+测试必须注入 `as_of` 日期，而不是依赖机器当前时间。校验至少包括 ISO 日期格式、`last_confirmed_at >= observed_at` 和 `valid_to >= valid_from`。同一个候选在不同 `as_of` 下应保持基础排名稳定，变化只体现在可解释的时间提示上。
+
+## 异构分数：先解释证据形状，再谈阈值
+
+State/decision 与 source chunk 可能使用不同特征、分别排序后再组成 packet，因此它们的 raw score 不是统一概率。没有测量证明前，不要跨 lane 套一个全局阈值，也不要用 top-1/top-2 gap 自动断言“证据足够”。
+
+可以先输出低成本、可解释的标签：
+
+- `provenance_supported`：由明确 source link 或 canonical provenance 支持；
+- `structured_context`：topic、entity、state 或 decision 字段提供上下文支持；
+- `lexical_only`：只有措辞重合，没有更强结构信号；
+- `checkpoint_passed`：预期复查点已过，但没有更新确认；
+- `conflicting_or_superseded`：可用于历史解释，不应冒充当前状态。
+
+优先测量 top-k 是否包含目标、是否出现 forbidden candidate、packet 是否足以回答、是否泄露不相关私人内容，以及人工标注的 failure category。等这些数据说明 score space 可比较后，再考虑校准阈值。
+
 ## 第三步：为精确证据升级
 
 以下需求应升级到 exact / private curated search：
@@ -214,7 +244,12 @@ Preservation 不自动授权删除应用维护的原件。Retention 与 deletion
 
 ## Validation model
 
-小系统也应测试真正重要的行为：
+把 evaluation 分成两个 ownership 清楚的 lane：
+
+- **Regression suite**：已经承诺不回退的行为；正常运行必须全绿。
+- **Challenge / probe suite**：来自真实 miss 或人工 contrast 的难例；允许明确报告已知失败，但不能伪装成 regression green。修复稳定后再晋升 regression。
+
+小系统的 regression 也应测试真正重要的行为：
 
 - 相关历史问题会打开 retrieval；
 - 无关问题不会；
@@ -228,6 +263,8 @@ Preservation 不自动授权删除应用维护的原件。Retention 与 deletion
 - Private search 始终显式且可观察。
 
 Green tests 是必要条件，但不是充分条件。仍应核对真实 path、permissions、hash、source identity 与最终 context。
+
+`SKIP` miss 首先属于上层 LLM / semantic triage ownership：如果上层错误判断“不需要历史”，底层 ranker 根本没有候选可排。先保存少量人工 contrast cases 和真实漏检记录，再决定是改 triage、加确定性 guardrail，还是调整 retrieval。不要为了测试数量自动生成大量缺少语境的查询。
 
 ## Deferred capabilities
 
