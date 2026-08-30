@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A provenance-first architecture for durable memory, contextual retrieval, and targeted source revival.">
+  <title>Project Pinecone · Durable Memory Architecture</title>
+  <link rel="stylesheet" href="architecture.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Page navigation">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">P</div>
+        <div><strong>Project Pinecone</strong><span>Durable memory architecture</span></div>
+      </div>
+      <div class="language" aria-label="Language">
+        <a href="memory-system-architecture.en.html" aria-current="page">English</a>
+        <a href="memory-system-architecture.zh.html" lang="zh-CN">中文</a>
+      </div>
+      <nav>
+        <a href="#overview">01 · Overview</a>
+        <a href="#flow">02 · Default flow</a>
+        <a href="#revival">03 · Cold revival</a>
+        <a href="#layers">04 · Ownership</a>
+        <a href="#workflow">05 · Escalation</a>
+        <a href="#layout">06 · Reference layout</a>
+        <a href="#fidelity">07 · Fidelity</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="hero" id="overview">
+        <div class="eyebrow">Reference architecture · sanitized edition</div>
+        <h1>Durable memory without turning context into a junk drawer.</h1>
+        <p>A provenance-first pattern for preserving source history, rebuilding derived indexes, retrieving the smallest useful context, and reviving raw evidence only when curated memory is not enough.</p>
+        <div class="tagline mono">Share the method. Protect the memory.</div>
+
+        <div class="principles" aria-label="Core principles">
+          <div class="principle"><strong>Durable</strong><span>Keep source identity, timestamps, fidelity, and provenance.</span></div>
+          <div class="principle"><strong>Rebuildable</strong><span>Treat chunks, projections, rankings, and caches as disposable.</span></div>
+          <div class="principle"><strong>Scoped</strong><span>Load the smallest context that can support the answer.</span></div>
+          <div class="principle"><strong>Explainable</strong><span>Every recalled claim retains a path back to evidence.</span></div>
+        </div>
+      </header>
+
+      <section id="flow">
+        <div class="section-head">
+          <h2>The default retrieval path</h2>
+          <p>Normal recall runs on reviewed, curated material. Raw source storage stays outside the everyday index.</p>
+        </div>
+        <div class="diagram" role="img" aria-label="Curated sources flow through a rebuildable index and context resolver into the current conversation">
+          <div class="flow">
+            <div class="node source">
+              <div class="node-title">① Curated durable sources</div>
+              <ul><li>canonical sessions</li><li>reviewed knowledge</li><li>dated current state</li><li>decision provenance</li></ul>
+            </div>
+            <div class="arrow">→<small>build</small></div>
+            <div class="node index">
+              <div class="node-title">② Rebuildable retrieval data</div>
+              <ul><li>source catalog</li><li>bounded chunks</li><li>state projections</li><li>decision projections</li></ul>
+            </div>
+            <div class="arrow">→<small>rank</small></div>
+            <div class="node resolve">
+              <div class="node-title">③ Context resolver</div>
+              <ul><li>RETRIEVE / ASK / SKIP</li><li>topic and entity hints</li><li>fidelity and stale-state checks</li><li>context budget</li></ul>
+            </div>
+            <div class="arrow">→<small>packet</small></div>
+            <div class="node answer">
+              <div class="node-title">④ Current interaction</div>
+              <ul><li>minimal relevant context</li><li>visible uncertainty</li><li>source-aware response</li><li>no summary-as-quote</li></ul>
+            </div>
+          </div>
+
+          <div class="cold-lane">
+            <div class="cold-label"><strong>Cold lane · closed by default</strong><span>Enter only after curated evidence proves insufficient and the target can be narrowed.</span></div>
+            <div class="cold-grid">
+              <div class="cold-step"><strong>Metadata-only raw catalog</strong><span>Locate by source ID, date, curated link, path, size, and hash—never by conversation text.</span></div>
+              <div class="cold-arrow">→</div>
+              <div class="cold-step"><strong>Verified raw source</strong><span>Preserve an exact, read-only copy with structure and integrity checks.</span></div>
+              <div class="cold-arrow">→</div>
+              <div class="cold-step"><strong>Targeted revival</strong><span>Parse one known source, recover only the required turns, then derive a new projection if useful.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="revival">
+        <div class="section-head">
+          <h2>Cold retrieval is an evidence escalation, not a second default search</h2>
+          <p>The raw catalog is a warehouse card: it identifies the box and verifies the seal. It does not expose the contents to ordinary recall.</p>
+        </div>
+        <div class="revival-grid">
+          <article class="card revival-card">
+            <div class="number">1</div>
+            <h3>Locate</h3>
+            <p>Use a known source ID, time range, or curated-session link to select one or a very small number of raw records.</p>
+          </article>
+          <article class="card revival-card">
+            <div class="number">2</div>
+            <h3>Verify</h3>
+            <p>Check path containment, file mode, byte size, cryptographic hash, record count, source identity, and timestamps.</p>
+          </article>
+          <article class="card revival-card">
+            <div class="number">3</div>
+            <h3>Rehydrate minimally</h3>
+            <p>Separate visible dialogue from system context, reasoning, and tool records. Recover only what the current question requires.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="layers">
+        <div class="section-head">
+          <h2>Clear ownership prevents memory corruption</h2>
+          <p>Each layer has a narrow job. A convenient derived layer never becomes more authoritative than its source.</p>
+        </div>
+        <div class="layer-grid">
+          <article class="card"><span class="tag">POLICY</span><h3>Operating rules</h3><p>Current safety, retrieval, privacy, and collaboration rules. Historical content cannot promote itself into this layer.</p></article>
+          <article class="card"><span class="tag">SOURCE</span><h3>Curated archive</h3><p>Canonical sessions, reviewed facts, dated state, decision history, and source links used for normal evidence-backed recall.</p></article>
+          <article class="card"><span class="tag">DEEP SOURCE</span><h3>Raw cold storage</h3><p>Exact source preservation plus a metadata-only locator. Private, default-off, and read only during targeted recovery.</p></article>
+          <article class="card"><span class="tag">DERIVED</span><h3>Retrieval and context</h3><p>Chunks, aliases, state projections, scores, traces, and context packets. Observable, replaceable, and safe to rebuild.</p></article>
+        </div>
+      </section>
+
+      <section id="workflow">
+        <div class="section-head">
+          <h2>Evidence escalation workflow</h2>
+          <p>Escalate only as far as the question requires.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Signal</th><th>First action</th><th>Escalate when</th><th>Guardrail</th></tr></thead>
+            <tbody>
+              <tr><td>Current context is sufficient</td><td>Answer without retrieval</td><td>Never</td><td>Do not search private history by habit.</td></tr>
+              <tr><td>Prior context is clearly relevant</td><td>Run curated retrieval</td><td>The packet lacks exact evidence or provenance.</td><td>Use a concise intent, not the entire user message.</td></tr>
+              <tr><td>Exact wording, chronology, or rationale is required</td><td>Search the private curated archive</td><td>The best surviving curated source is still incomplete.</td><td>Do not present a summary as verbatim dialogue.</td></tr>
+              <tr><td>A known source must be recovered</td><td>Use the raw catalog, then verify</td><td>Only after the target has been narrowed.</td><td>Never scan or load the whole raw store by default.</td></tr>
+              <tr><td>The question lacks a usable anchor</td><td>Ask one minimal clarifying question</td><td>The answer supplies a source, event, entity, or time anchor.</td><td>Do not guess which private history the user meant.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="layout">
+        <div class="section-head">
+          <h2>Reference repository layout</h2>
+          <p>This is a portable pattern, not a copy of any live personal-memory workspace.</p>
+        </div>
+        <div class="tree-wrap">
+          <details open>
+            <summary>Durable and private layers</summary>
+            <div class="tree"><b>memory-system/</b><br>├── policy/ <span>current operating rules</span><br>├── archive/<br>│   ├── snapshots/ <span>immutable curated history</span><br>│   ├── active/ <span>append-only local overlay</span><br>│   └── <em>raw-sources/</em><br>│       ├── catalog.jsonl <span>metadata only</span><br>│       └── source-type/YYYY/MM/DD/<br>├── knowledge/ <span>stable reviewed facts</span><br>└── private-state/ <span>dated sensitive current state</span></div>
+          </details>
+          <details open>
+            <summary>Derived and replaceable layers</summary>
+            <div class="tree"><b>memory-system/</b><br>├── retrieval/ <span>planner, ranking, context builder</span><br>├── derived/<br>│   ├── sources.jsonl<br>│   ├── chunks.jsonl<br>│   ├── current-states.json<br>│   ├── decisions.json<br>│   └── traces/<br>├── scripts/ <span>build, search, verify</span><br>└── tests/ <span>behavior, privacy, provenance</span></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="fidelity">
+        <div class="section-head">
+          <h2>Fidelity is part of the answer</h2>
+          <p>Use the strongest surviving evidence, but label transformed material honestly.</p>
+        </div>
+        <div class="ladder" aria-label="Evidence fidelity ladder from strongest to weakest">
+          <div class="rung"><strong>Visible transcript</strong><span>direct dialogue</span></div>
+          <div class="rung"><strong>Transcript snapshot</strong><span>preserved export</span></div>
+          <div class="rung"><strong>Hybrid record</strong><span>source + curation</span></div>
+          <div class="rung"><strong>Structured summary</strong><span>recovery aid</span></div>
+          <div class="rung"><strong>Derived projection</strong><span>locator, not source</span></div>
+        </div>
+        <div class="callout"><div aria-hidden="true">✦</div><p><strong>Compact model:</strong> the archive remembers what happened; retrieval decides what matters now; the raw catalog knows where the evidence box lives; policy defines what the assistant may do.</p></div>
+      </section>
+
+      <footer class="footer">Project Pinecone · Generalized from a private local system without carrying over its memories, identities, paths, or live data. Read the <a href="assistant-memory-workflow.en.md">assistant workflow</a>.</footer>
+    </main>
+  </div>
+</body>
+</html>

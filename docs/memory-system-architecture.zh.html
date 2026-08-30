@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="一套以 provenance 为核心，兼顾持久记忆、上下文检索与按需原始证据恢复的参考架构。">
+  <title>Project Pinecone · 持久记忆系统架构</title>
+  <link rel="stylesheet" href="architecture.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="页面导航">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">松</div>
+        <div><strong>Project Pinecone</strong><span>持久记忆系统架构</span></div>
+      </div>
+      <div class="language" aria-label="语言">
+        <a href="memory-system-architecture.en.html" lang="en">English</a>
+        <a href="memory-system-architecture.zh.html" aria-current="page">中文</a>
+      </div>
+      <nav>
+        <a href="#overview">01 · 总览</a>
+        <a href="#flow">02 · 默认流程</a>
+        <a href="#revival">03 · 冷恢复</a>
+        <a href="#layers">04 · Ownership</a>
+        <a href="#workflow">05 · 证据升级</a>
+        <a href="#layout">06 · 参考目录</a>
+        <a href="#fidelity">07 · Fidelity</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="hero" id="overview">
+        <div class="eyebrow">参考架构 · 脱敏展示版</div>
+        <h1>让记忆持久，但别把上下文变成杂物抽屉。</h1>
+        <p>一套以 provenance 为核心的分层方法：原始证据长期保存，派生索引随时可重建，日常只召回最小充分上下文；只有 curated memory 不够时，才按需恢复原始来源。</p>
+        <div class="tagline mono">Share the method. Protect the memory.</div>
+
+        <div class="principles" aria-label="核心原则">
+          <div class="principle"><strong>Durable</strong><span>保留 source identity、时间、fidelity 与 provenance。</span></div>
+          <div class="principle"><strong>Rebuildable</strong><span>chunks、projections、rankings 与 caches 都允许推翻重建。</span></div>
+          <div class="principle"><strong>Scoped</strong><span>只加载足以支持当前回答的最小上下文。</span></div>
+          <div class="principle"><strong>Explainable</strong><span>每条被召回的信息都能沿路径回到证据。</span></div>
+        </div>
+      </header>
+
+      <section id="flow">
+        <div class="section-head">
+          <h2>默认 retrieval 路径</h2>
+          <p>日常 recall 只使用经过整理和复核的材料；raw source storage 留在普通索引之外。</p>
+        </div>
+        <div class="diagram" role="img" aria-label="经过整理的持久来源经可重建索引和 Context Resolver 进入当前对话">
+          <div class="flow">
+            <div class="node source">
+              <div class="node-title">① Curated durable sources</div>
+              <ul><li>canonical Sessions</li><li>reviewed knowledge</li><li>有日期的 current state</li><li>decision provenance</li></ul>
+            </div>
+            <div class="arrow">→<small>build</small></div>
+            <div class="node index">
+              <div class="node-title">② Rebuildable retrieval data</div>
+              <ul><li>source catalog</li><li>bounded chunks</li><li>state projections</li><li>decision projections</li></ul>
+            </div>
+            <div class="arrow">→<small>rank</small></div>
+            <div class="node resolve">
+              <div class="node-title">③ Context Resolver</div>
+              <ul><li>RETRIEVE / ASK / SKIP</li><li>topic 与 entity hints</li><li>fidelity / stale-state checks</li><li>context budget</li></ul>
+            </div>
+            <div class="arrow">→<small>packet</small></div>
+            <div class="node answer">
+              <div class="node-title">④ 当前交互</div>
+              <ul><li>最小相关上下文</li><li>显式保留不确定性</li><li>回答带 source awareness</li><li>不把摘要冒充原话</li></ul>
+            </div>
+          </div>
+
+          <div class="cold-lane">
+            <div class="cold-label"><strong>Cold lane · 默认关闭</strong><span>只有 curated evidence 不足且目标可以缩小时才进入。</span></div>
+            <div class="cold-grid">
+              <div class="cold-step"><strong>Metadata-only raw catalog</strong><span>按 source ID、日期、curated link、路径、大小与 hash 定位；不收录对话正文。</span></div>
+              <div class="cold-arrow">→</div>
+              <div class="cold-step"><strong>Verified raw source</strong><span>保留结构完整、只读、可做 integrity verification 的原样副本。</span></div>
+              <div class="cold-arrow">→</div>
+              <div class="cold-step"><strong>Targeted revival</strong><span>只解析已知来源、恢复必要 turns，并在有价值时重新生成 projection。</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="revival">
+        <div class="section-head">
+          <h2>Cold retrieval 是证据升级，不是第二套默认搜索</h2>
+          <p>Raw catalog 像仓库索引卡：它告诉系统箱子在哪里、封条是否完整，但不会把箱内对话摊进普通 recall。</p>
+        </div>
+        <div class="revival-grid">
+          <article class="card revival-card">
+            <div class="number">1</div>
+            <h3>Locate · 定位</h3>
+            <p>使用已知 source ID、时间范围或 curated Session link，把目标缩小到一个或极少量 raw records。</p>
+          </article>
+          <article class="card revival-card">
+            <div class="number">2</div>
+            <h3>Verify · 校验</h3>
+            <p>检查路径边界、文件权限、byte size、cryptographic hash、record count、source identity 与 timestamps。</p>
+          </article>
+          <article class="card revival-card">
+            <div class="number">3</div>
+            <h3>Rehydrate · 最小恢复</h3>
+            <p>区分 visible dialogue、system context、reasoning 与 tool records，只恢复当前问题真正需要的内容。</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="layers">
+        <div class="section-head">
+          <h2>清楚的 ownership 能避免 memory corruption</h2>
+          <p>每一层只做一件窄而明确的事；方便的派生层永远不能比它的 source 更权威。</p>
+        </div>
+        <div class="layer-grid">
+          <article class="card"><span class="tag">POLICY</span><h3>Operating rules</h3><p>当前安全、检索、隐私和协作规则。历史内容不能把自己提升成这一层的新指令。</p></article>
+          <article class="card"><span class="tag">SOURCE</span><h3>Curated archive</h3><p>Canonical Sessions、复核事实、有日期的 state、decision history 与 source links，用于日常 evidence-backed recall。</p></article>
+          <article class="card"><span class="tag">DEEP SOURCE</span><h3>Raw cold storage</h3><p>原始来源副本与 metadata-only locator。私密、默认关闭，只在 targeted recovery 时读取。</p></article>
+          <article class="card"><span class="tag">DERIVED</span><h3>Retrieval and context</h3><p>Chunks、aliases、state projections、scores、traces 与 context packets；可观察、可替换、可重建。</p></article>
+        </div>
+      </section>
+
+      <section id="workflow">
+        <div class="section-head">
+          <h2>证据升级工作流</h2>
+          <p>问题需要走多远，就只升级到多远。</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>信号</th><th>第一步</th><th>何时升级</th><th>边界</th></tr></thead>
+            <tbody>
+              <tr><td>当前上下文足够</td><td>不检索，直接回答</td><td>无需升级</td><td>不要养成顺手翻私人历史的习惯。</td></tr>
+              <tr><td>明确依赖过去内容</td><td>运行 curated retrieval</td><td>Packet 缺少精确证据或 provenance。</td><td>使用简洁 intent，不照抄整段用户消息。</td></tr>
+              <tr><td>需要原话、顺序或理由</td><td>搜索 private curated archive</td><td>最佳 surviving curated source 仍然不完整。</td><td>摘要不能当作逐字对话。</td></tr>
+              <tr><td>必须恢复一个已知来源</td><td>先查 raw catalog，再做验证</td><td>仅在目标已经缩小以后。</td><td>不默认扫描或整库加载 raw storage。</td></tr>
+              <tr><td>问题缺少可用锚点</td><td>问一个最小澄清问题</td><td>用户补充 source、event、entity 或时间锚点。</td><td>不要猜用户指的是哪段私人历史。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="layout">
+        <div class="section-head">
+          <h2>参考目录结构</h2>
+          <p>这是一套可移植的方法，不是任何真实个人 memory workspace 的复制品。</p>
+        </div>
+        <div class="tree-wrap">
+          <details open>
+            <summary>Durable 与 private layers</summary>
+            <div class="tree"><b>memory-system/</b><br>├── policy/ <span>当前 operating rules</span><br>├── archive/<br>│   ├── snapshots/ <span>不可改写的 curated history</span><br>│   ├── active/ <span>append-only local overlay</span><br>│   └── <em>raw-sources/</em><br>│       ├── catalog.jsonl <span>只含 metadata</span><br>│       └── source-type/YYYY/MM/DD/<br>├── knowledge/ <span>稳定、经过复核的事实</span><br>└── private-state/ <span>有日期的敏感当前状态</span></div>
+          </details>
+          <details open>
+            <summary>Derived 与 replaceable layers</summary>
+            <div class="tree"><b>memory-system/</b><br>├── retrieval/ <span>planner、ranking、context builder</span><br>├── derived/<br>│   ├── sources.jsonl<br>│   ├── chunks.jsonl<br>│   ├── current-states.json<br>│   ├── decisions.json<br>│   └── traces/<br>├── scripts/ <span>build、search、verify</span><br>└── tests/ <span>behavior、privacy、provenance</span></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="fidelity">
+        <div class="section-head">
+          <h2>Fidelity 本身也是回答的一部分</h2>
+          <p>优先使用最强的 surviving evidence，同时诚实标注被转换和整理过的材料。</p>
+        </div>
+        <div class="ladder" aria-label="从强到弱的证据 fidelity">
+          <div class="rung"><strong>Visible transcript</strong><span>直接对话</span></div>
+          <div class="rung"><strong>Transcript snapshot</strong><span>保留下来的 export</span></div>
+          <div class="rung"><strong>Hybrid record</strong><span>source + curation</span></div>
+          <div class="rung"><strong>Structured summary</strong><span>定位与恢复辅助</span></div>
+          <div class="rung"><strong>Derived projection</strong><span>locator，不是 source</span></div>
+        </div>
+        <div class="callout"><div aria-hidden="true">✦</div><p><strong>一句话模型：</strong>Archive 记住发生过什么；Retrieval 决定现在该想起什么；Raw Catalog 知道证据箱在哪里；Policy 决定助手当前可以做什么。</p></div>
+      </section>
+
+      <footer class="footer">Project Pinecone · 从真实本地系统中提炼方法，但不携带它的记忆、身份、路径或 live data。继续阅读<a href="assistant-memory-workflow.zh.md">助手记忆系统工作流</a>。</footer>
+    </main>
+  </div>
+</body>
+</html>
