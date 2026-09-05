@@ -207,6 +207,26 @@ In a temporary synthetic tree, make a mutable derived file violate an enforced o
 
 Keep independent cases for root-directory and nested-directory symlinks; successful regular-file tests do not prove containment. File permissions and content hashes do not establish that an independent backup can be restored.
 
+## Visual map: the Memory Graph Explorer
+
+`docs/memory-graph-explorer.html` is the first answer to "how should the visual
+map evolve." It is an interactive graph of queries, people, topics, states,
+decisions and Sessions, connected by `related`, `source`, `supersedes` and
+`mentions`. One scripted run walks the seven stages above: hints, deliberate
+over-recall, structured filtering, the checkpoint advisory, one attached
+predecessor, provenance, and a packed context packet with a visible budget.
+
+It stays honest about what it is. The scenario is the Aurora Ridge expedition —
+entirely fictional, built to dramatize the candidate evaluations in this
+document, not to depict any real workspace. The whole fixture lives in one
+readable file (`docs/graph-data.js`), so a different story is a data edit, not a
+rewrite.
+
+It also stays cheap. An SVG scene, a small force-directed layout, and no graph
+database, vector store, build step or dependency — consistent with the non-goal
+of committing early to an engine. If an experiment later needs real retrieval
+behind it, the fixture is the seam to replace.
+
 ## Privacy boundary
 
 **Share the method. Protect the memory.**

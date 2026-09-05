@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An interactive memory graph: one question walks a graph of Sessions, decisions, states, topics and people, and leaves with a context packet.">
+  <title>Project Pinecone · Memory Graph Explorer</title>
+  <link rel="stylesheet" href="architecture.css">
+  <link rel="stylesheet" href="graph.css">
+</head>
+<body class="explorer">
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">P</div>
+        <div><strong id="ui-title">Memory Graph Explorer</strong><span id="ui-sub"></span></div>
+      </div>
+      <a class="back" href="../index.html" id="ui-back">← Project Pinecone</a>
+      <div class="spacer"></div>
+      <div class="seg" id="lang-seg" aria-label="Language">
+        <button type="button" data-lang="en">EN</button>
+        <button type="button" data-lang="zh" lang="zh-CN">中文</button>
+      </div>
+      <button type="button" class="btn icon" id="theme-btn" title="Light / dark" aria-label="Light or dark theme">◐</button>
+      <button type="button" class="btn" id="cinema-btn" aria-pressed="false"><span id="ui-cinema">Cinema</span></button>
+    </header>
+
+    <div class="body">
+      <aside class="rail" aria-label="Stages and legend">
+        <div class="panel">
+          <h2 class="panel-title" id="ui-stages">Retrieval stages</h2>
+          <div class="stage-list" id="stage-list"></div>
+        </div>
+        <div class="panel">
+          <h2 class="panel-title" id="ui-legend">Legend</h2>
+          <div id="legend"></div>
+          <p class="hint" id="ui-kbd"></p>
+          <p class="hint mono" id="footer-note"></p>
+        </div>
+      </aside>
+
+      <div class="stage-wrap" id="stage-wrap">
+        <svg class="stage" id="stage" role="application" aria-label="Memory graph"></svg>
+
+        <div class="overlay hud">
+          <span class="chip" id="asof-chip"></span>
+          <span class="chip" id="world-chip"></span>
+          <span class="chip stat" id="stat-chip"></span>
+        </div>
+
+        <div class="overlay caption">
+          <div class="caption-card" id="caption" role="status" aria-live="polite">
+            <div class="head"><span id="cap-n">01</span><span id="cap-name"></span></div>
+            <p id="cap-note"></p>
+          </div>
+        </div>
+
+        <div class="overlay dock">
+          <button type="button" class="btn primary" id="play"><span id="ui-play">Start retrieval</span></button>
+          <button type="button" class="btn ghost" id="step"><span id="ui-step">Step</span></button>
+          <button type="button" class="btn ghost" id="reset"><span id="ui-reset">Reset</span></button>
+          <span class="sep" aria-hidden="true"></span>
+          <div class="seg" id="speed-seg" aria-label="Speed">
+            <button type="button" data-speed="0.7">0.7×</button>
+            <button type="button" data-speed="1">1×</button>
+            <button type="button" data-speed="1.6">1.6×</button>
+          </div>
+        </div>
+
+        <div class="overlay zoomers">
+          <button type="button" class="btn icon" id="zoom-in">＋</button>
+          <button type="button" class="btn icon" id="zoom-out">−</button>
+          <button type="button" class="btn icon" id="fit">⤢</button>
+          <button type="button" class="btn icon" id="relayout">↻</button>
+        </div>
+      </div>
+
+      <aside class="aside" aria-label="Inspector and context packet">
+        <div class="panel">
+          <h2 class="panel-title" id="ui-inspector">Inspector</h2>
+          <div class="card2" id="inspector"></div>
+        </div>
+        <div class="panel">
+          <h2 class="panel-title" id="ui-packet">Context Packet</h2>
+          <div class="card2" id="packet"></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script src="graph-data.js"></script>
+  <script src="graph-explorer.js"></script>
+</body>
+</html>
