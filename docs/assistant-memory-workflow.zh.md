@@ -10,6 +10,12 @@
 
 [English version](./assistant-memory-workflow.en.md) · [系统架构图](./memory-system-architecture.zh.html)
 
+## 实现与实验状态
+
+这份参考描述的是已在一个实际 file-backed 实现中核对过的机制；Pinecone 本身仍是文档，没有打包检索引擎。标签校验、查询 hint 只警告、旧决策附带直接后继、精确 fidelity 匹配，以及 enforced/advisory 权限检查都有对应实现。
+
+独立 challenge runner、校准后的弱证据标签、完整 control-plane 排除、trace 生命周期、外部恢复与可移植 archive fixture 仍属于设计或后续工作。时间 checkpoint 逻辑有合成覆盖，不等于存在正在运行的真实检查点。下文描述参考工作流，不宣称所有保护措施都已自动化。
+
 ## 目的
 
 这套工作流回答三个操作问题：
@@ -82,9 +88,9 @@ Retrieval intent 不必等同于用户原话；它应该是一句简洁、可检
 普通路径是：
 
 ```text
-curated sources
+curated sources + state/decision projections + canonical config
+  -> validate projection labels (stop on unknown labels)
   -> rebuildable source/chunk index
-  -> state and decision projections
   -> ranking with provenance and fidelity
   -> bounded context packet
   -> current response
@@ -99,6 +105,45 @@ curated sources
 - Broad similarity 是否带入无关私人上下文。
 
 Retrieval 输出是 locator 和 evidence packet，不是新的 source of truth。
+
+## 两个边界：摄入严格，查询宽容
+
+已核对的 file-backed 实现在 build 写入索引前校验 projection 标签。Config 定义 canonical topic/entity ID 与查询 alias；现有 state 和 decision projection 中的每个标签，包括 superseded / inactive 记录，都必须属于 config 对应命名空间的 canonical key。
+
+未知标签使 build 失败，诊断指出 projection 文件名、记录 ID、字段和错误标签。这类校验失败会保留旧索引。独立只读 checker 复用同一个 validator，但不能替代 build 入口的守卫。
+
+Runtime recognition set 的职责不同：它包含 config 标签/alias 和 projection 已使用的标签。不能用它定义摄入合法性，否则 typo 只需出现在数据里就能给自己盖章。用户输入未知 hint 时仍 warning 并继续查询；这不保证召回有效，也不代表自动纠正拼写。
+
+合成对照：
+
+| 输入 | 结果 |
+| --- | --- |
+| 存储记录使用 canonical topic `field_test` | 接受该标签 |
+| 存储记录使用 `feild_test` | 拒绝 build，定位错误字段 |
+| 用户传入 hint `feild_test` | 警告并继续查询 |
+| 两份 projection 都使用 `feild_test` | 仍然拒绝；重复出现不赋予合法性 |
+
+Alias 要有依据且语义明确。两个虚构项目都有队长时，优先使用“天文台队长”，避免裸“队长”跨域污染。ASCII alias 按词边界匹配；CJK 子串匹配仍需谨慎处理常见短名。注册 canonical ID 不等于必须发明别名。Fidelity 权重按完整标签匹配，并可回退到格式字段，不做子串匹配。
+
+这只是标签集合校验，不是完整 schema、文件存在性、语义真实性或备份校验器。当前 validator 会跳过缺失的 projection 文件。错误标签被拒绝后保留旧索引，也不等于对所有 build 故障都提供跨文件原子发布保证。
+
+## 保留旧决策的理由，不把它当作当前建议
+
+Superseded state 不进入 current-state 候选。Superseded decision 则可能解释过去的选择：已核对的实现会在 context packing 前，把最多一条匹配的前任决策放在已选中的直接后继之后，并用 `superseded_by` 和历史说明标注其身份。
+
+例如虚构考察队最初为了简单选择纸质日志，后来为了搜索观察记录改用离线平板。有用的回答先呈现平板决定，再把纸质日志的理由作为历史保留。如果后继没有进入 primary 集合，前任会被拒绝并记录原因，不能独立靠高分变成当前建议。
+
+验收契约针对最终 packet：前任必须紧随其后继。现有 evaluation 检查 selected ID、status、相邻关系与 rejection reason。Packing 仍逐块处理，因此小预算场景值得单独验证；仅有 packing 前的顺序不能证明所有预算下都满足契约。这条“最多一个前任”的规则也没有实现多跳决策链恢复。
+
+## 权限、只报告检查与可恢复性
+
+Writer 主动设置 owner-only mode，加上可重复的权限检查，保护的是工作副本。Git 对普通文件保存可执行位区别，不保存完整的 `0600` / `0400` 策略。Clone、checkout、merge 或恢复后需重新检查，修复仅作用于明确覆盖的文件。它既不是加密，也不是外部备份。
+
+已核对的 checker 区分 enforced 和 advisory 规则。Enforced 偏差使检查失败，可显式修复；冻结输入的偏差只报告，不决定退出码，自动修复不触碰这些文件。因此绿色退出码不代表所有 advisory 都已解决，报告必须让两者清楚可见。
+
+目录软链接仍是已核对 checker 的已知边界；不能仅凭 `followlinks=False` 推断完整隔离。宣称修复不会影响外部目标前，需要专门检查保护根目录链接与嵌套目录链接。
+
+独立备份与可移植测试 fixture 是另外的工作。派生数据可重建的前提，是 durable input 实际可用；不能把来源保留约定描述成已完成的恢复方案。
 
 ## 时间状态：时间是证据，不是固定 TTL
 

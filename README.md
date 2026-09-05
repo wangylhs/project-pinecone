@@ -18,7 +18,10 @@ The architecture covers:
 - durable sources versus rebuildable retrieval data;
 - `RETRIEVE / ASK / SKIP` and bounded context;
 - time-aware current state without fixed TTLs, with injectable evaluation dates;
-- separate regression and challenge/probe evaluation lanes;
+- strict canonical-label validation before index publication, with permissive query hints;
+- changed decisions preserved as historical rationale alongside their direct successors;
+- working-copy permissions, advisory checks, and recovery boundaries;
+- separate regression and challenge/probe evaluation lanes (the latter remains a design pattern);
 - explainable weak-evidence labels for heterogeneous rankers;
 - metadata-only raw catalogs and default-off cold retrieval;
 - targeted source revival with integrity verification;
@@ -32,6 +35,8 @@ These are generalized, sanitized reference materials. They intentionally omit pr
 
 ## Status
 
-Seed stage. Keep it small, inspectable, privacy-aware, and easy to rebuild.
+Seed stage. Documentation only; no retrieval engine is bundled here. The bilingual guides distinguish checked implementation mechanisms from proposed experiments and unresolved boundaries. See the [synthetic boundary cases](./DRAFT.md#third-candidate-evaluation-strict-data-permissive-input) for concrete examples.
+
+Keep it small, inspectable, privacy-aware, and easy to rebuild.
 
 The current reference deliberately stays file-backed. It does not require a database, embeddings, or a retrieval platform before measured failures justify one.

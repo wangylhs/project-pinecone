@@ -28,6 +28,8 @@
         <a href="#evaluation">07 · Evaluation</a>
         <a href="#layout">08 · 参考目录</a>
         <a href="#fidelity">09 · Fidelity</a>
+        <a href="#contracts">10 · 检索契约</a>
+        <a href="#boundaries">11 · 运行边界</a>
       </nav>
     </aside>
 
@@ -60,7 +62,7 @@
             <div class="arrow">→<small>build</small></div>
             <div class="node index">
               <div class="node-title">② Rebuildable retrieval data</div>
-              <ul><li>source catalog</li><li>bounded chunks</li><li>state projections</li><li>decision projections</li></ul>
+              <ul><li>标签校验</li><li>source catalog</li><li>bounded chunks</li><li>state projections</li><li>decision projections</li></ul>
             </div>
             <div class="arrow">→<small>rank</small></div>
             <div class="node resolve">
@@ -209,6 +211,33 @@
           <div class="rung"><strong>Derived projection</strong><span>locator，不是 source</span></div>
         </div>
         <div class="callout"><div aria-hidden="true">✦</div><p><strong>一句话模型：</strong>Archive 记住发生过什么；Retrieval 决定现在该想起什么；Raw Catalog 知道证据箱在哪里；Policy 决定助手当前可以做什么。</p></div>
+      </section>
+
+
+      <section id="contracts">
+        <div class="section-head"><h2>拦住错误标签，保留有用历史。</h2><p>从已核对实现提取两个具体机制，用虚构考察队说明。</p></div>
+        <div class="layer-grid">
+          <article class="card"><span class="tag">摄入 · 严格</span><h3>发布前校验 canonical 标签</h3><p>以 config key 校验现有 state 与 decision 记录，也包括非活跃历史。未知标签在索引写入前阻止 build，并指出文件、记录、字段和标签。</p></article>
+          <article class="card"><span class="tag">查询 · 宽容</span><h3>用户拼错时给出警告</h3><p>未知 hint 触发 warning，查询继续。Runtime recognition set 不能验证存储数据：typo 重复出现也不能使自己合法。</p></article>
+          <article class="card"><span class="tag">ALIAS · 有范围</span><h3>“天文台队长”具有明确指向</h3><p>优先采用有依据、语义具体的 alias。常见短名可能把无关内容归到同一个 entity；canonical ID 不必配上凭空发明的别名。</p></article>
+          <article class="card"><span class="tag">历史 · 附带理由</span><h3>先说新选择，再解释旧理由</h3><p>考察队现在使用离线平板。之前选择纸质日志的理由仍有价值，应作为历史附在已选中的直接后继后面，不能独立竞争成为当前建议。</p></article>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>合成输入</th><th>边界</th><th>预期观察</th></tr></thead><tbody>
+          <tr><td>存储 topic: feild_test</td><td>Config 定义 field_test</td><td>Build 失败，旧索引保留</td></tr>
+          <tr><td>用户 hint: feild_test</td><td>查询输入</td><td>警告，查询继续</td></tr>
+          <tr><td>平板 → 纸质日志理由</td><td>最终 context packet</td><td>直接后继在前，前任标注为历史</td></tr>
+        </tbody></table></div>
+        <div class="callout"><strong>验证</strong><p>决策附带发生在 packing 前；最终 packet 仍需验证后继相邻关系，尤其是小预算场景。标签集合校验不是完整 schema 或文件存在性校验；当前会跳过缺失的 projection 文件。</p></div>
+      </section>
+      <section id="boundaries">
+        <div class="section-head"><h2>让尚未解决的边界看得见。</h2><p>参考架构应明确区分已有机制与实验设想。</p></div>
+        <div class="layer-grid">
+          <article class="card"><span class="tag">已落地机制</span><h3>可观察、有范围的保证</h3><p>Build 标签检查、hint 只警告、旧决策附带直接后继、完整 fidelity 标签匹配和 writer 设置权限均有对应实现。Pinecone 本身发布文档，不包含检索引擎。</p></article>
+          <article class="card"><span class="tag">工作副本</span><h3>权限不会随 Git 传播</h3><p>Owner-only mode 需要 writer 落实，并在检出或恢复后检查。冻结输入的 advisory 保持可见，但不使检查失败，也不授权自动修复。目录软链接隔离仍有已知限制。</p></article>
+          <article class="card"><span class="tag">恢复 · 待完成</span><h3>已保留不等于有独立备份</h3><p>重建的前提是 durable input 可用。独立恢复与可移植 fixture 是另外的工作，hash 和本地只读权限不能替代它们。</p></article>
+          <article class="card"><span class="tag">实验 · 待推进</span><h3>不把提案写成已实现功能</h3><p>独立 challenge runner、校准后的证据标签、完整 control-plane 排除和 trace 生命周期仍是后续工作。时间 checkpoint 逻辑有合成覆盖，不代表已有真实检查点。</p></article>
+        </div>
+        <p class="tagline">继续阅读<a href="assistant-memory-workflow.zh.md">工作流细节</a>与<a href="../DRAFT.md#third-candidate-evaluation-strict-data-permissive-input">合成验收案例</a>。</p>
       </section>
 
       <footer class="footer">Project Pinecone · 从真实本地系统中提炼方法，但不携带它的记忆、身份、路径或 live data。继续阅读<a href="assistant-memory-workflow.zh.md">助手记忆系统工作流</a>。</footer>

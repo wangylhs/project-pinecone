@@ -10,6 +10,12 @@ Scope: durable memory, contextual retrieval, and targeted source revival
 
 [中文版本](./assistant-memory-workflow.zh.md) · [Visual architecture](./memory-system-architecture.en.html)
 
+## Implementation and experiment status
+
+This reference describes mechanisms checked in a working file-backed implementation; Pinecone itself remains documentation, not a bundled retrieval engine. Label validation, warning-only query hints, direct-successor decision attachment, exact fidelity matching, and enforced/advisory permission checks have implementation counterparts.
+
+Separate challenge runners, calibrated weak-evidence labels, complete control-plane exclusion, trace retention, external recovery, and portable archive fixtures remain design or follow-up work. Temporal checkpoint logic has synthetic coverage; that is not evidence of an active real-world checkpoint. The sections below describe the reference workflow, not a claim that every safeguard is already automated.
+
 ## Purpose
 
 This workflow answers three operational questions:
@@ -82,9 +88,9 @@ The retrieval intent is not necessarily the original user message. It is a conci
 The normal path is:
 
 ```text
-curated sources
+curated sources + state/decision projections + canonical config
+  -> validate projection labels (stop on unknown labels)
   -> rebuildable source/chunk index
-  -> state and decision projections
   -> ranking with provenance and fidelity
   -> bounded context packet
   -> current response
@@ -99,6 +105,45 @@ The assistant should inspect:
 - whether unrelated private context entered through broad similarity.
 
 Retrieval output is a locator and evidence packet. It is not a new source of truth.
+
+## Two boundaries: strict ingestion, permissive queries
+
+The reviewed file-backed implementation now validates projection labels before a build writes its index. Configuration defines canonical topic/entity IDs and query aliases. Every label in the available state and decision projections, including superseded and inactive records, must be a canonical key in the matching configuration namespace.
+
+An unknown label fails the build with the projection filename, record ID, field, and offending label. This validation failure leaves the previous index untouched. A separate read-only checker reuses the same validator; it does not replace the build guard.
+
+The runtime recognition set serves a different purpose: it includes configured labels/aliases and labels already present in projections. It must not define ingestion validity, or a typo could authorize itself merely by appearing in the data. An unknown user hint still produces a warning and allows the query to run; this does not promise useful results or automatic spelling correction.
+
+Synthetic contrast:
+
+| Input | Result |
+| --- | --- |
+| A stored record uses canonical topic `field_test` | Accept the label |
+| A stored record uses `feild_test` | Reject the build; locate the bad field |
+| A user passes hint `feild_test` | Warn and continue querying |
+| Both projections contain `feild_test` | Still reject; repetition is not authority |
+
+Aliases should have evidence and a narrow meaning. Prefer “observatory captain” to “captain” when another fictional project also has a captain. ASCII aliases use word-boundary matching; CJK substring matching still needs care with short, common names. Registering a canonical ID does not require inventing aliases. Match fidelity weights on whole labels, with a format fallback, rather than on substrings.
+
+This is label-membership validation, not a complete schema, file-presence, semantic-truth, or backup validator. The current validator skips absent projection files. Keeping an old index after rejected input is also not an all-files atomic publication guarantee for every possible build failure.
+
+## Preserve changed decisions without presenting them as current advice
+
+A superseded state is excluded from current-state candidates. A superseded decision can still explain a past choice: the reviewed implementation attaches at most one matching predecessor immediately after its selected direct successor before context packing, and labels it as historical rationale with `superseded_by`.
+
+For a fictional expedition, an earlier decision chose a paper log for simplicity; its successor chose an offline tablet for searchable observations. A useful answer presents the tablet decision first, then the paper-log rationale as history. If the successor is not selected into the primary set, the predecessor is rejected with an explicit reason rather than ranking independently as current advice.
+
+The acceptance contract concerns the final packet: a predecessor must follow its successor. Existing evaluation checks inspect selected IDs, statuses, adjacency, and rejection reasons. Packing still processes blocks individually, so tight-budget contrasts deserve their own tests; pre-packing order alone is not proof of the invariant at every budget. Multi-hop decision-chain recovery is not implemented by this one-predecessor rule.
+
+## Permissions, advisory checks, and recoverability
+
+Writer-enforced owner-only modes and a repeatable permission check protect a working copy. Git preserves the executable distinction for ordinary files, not the full `0600` / `0400` permission policy. Recheck after clone, checkout, merge, or restore, and repair only explicitly covered files. This is neither encryption nor an external backup.
+
+The reviewed checker separates enforced rules from advisory rules. Enforced deviations fail the check and may be repaired explicitly. Frozen-input deviations are reported but do not determine the exit code, and automatic repair leaves them alone. A green exit therefore does not mean that every reported advisory was resolved. Reports should make the distinction visible.
+
+Directory-symlink handling remains a known boundary in the reviewed checker; do not infer complete containment from `followlinks=False` alone. Root links and nested directory links require dedicated checks before claiming that repair cannot affect outside targets.
+
+Independent backups and portable test fixtures remain separate work. The ability to rebuild derived data assumes that the durable inputs are actually available. Do not describe a source-preservation convention as a completed recovery plan.
 
 ## Temporal state: time is evidence, not a fixed TTL
 

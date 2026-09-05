@@ -170,6 +170,43 @@ to the deterministic retriever. Start with hand-written contrast cases and real
 miss logs. Do not manufacture a large query corpus until those examples reveal
 a repeatable failure mode.
 
+## Third candidate evaluation: strict data, permissive input
+
+This case translates an implemented label-validation mechanism into fictional data; it is a specification, not an executable Pinecone test suite.
+
+```text
+config topic: field_test
+config entity: observatory_captain
+entity alias: "observatory captain"
+
+record: decision.field_test.logbook
+status: superseded
+topics: [feild_test]          # deliberate typo
+entities: [observatory_captain]
+```
+
+The build rejects `feild_test` before index output, reports the record and field, and preserves the previous index. Fixing it to `field_test` permits label validation. Putting the typo in several records must not legalize it. A user hint with the same typo warns but does not terminate the query.
+
+Add a second fictional project with a ship captain. “Observatory captain” should remain scoped; the bare word “captain” must not assign every mention to the observatory entity. Test actual retrieval results, not merely whether the alias exists in config. Also test that passing an alias as a stored label does not substitute for the canonical ID.
+
+## Fourth candidate evaluation: changed choice, preserved rationale
+
+```text
+decision.paper:  superseded; chose a paper log for simplicity
+superseded_by:   decision.tablet
+decision.tablet: active; chose an offline tablet for searchable observations
+```
+
+For “Why did the expedition originally choose paper?”, preserve the old reason without reviving it as current advice. The final packet contract is `decision.tablet` followed by `decision.paper`, with the latter explicitly marked historical. If the direct successor is absent, do not admit the predecessor alone. Superseded state values remain excluded.
+
+The checked implementation attaches one predecessor per selected direct successor before packing. Add budget-pressure probes: a longer successor may not fit while a shorter predecessor does. Verify adjacency on the final packet, not merely the candidate ordering. This specification does not claim that every budget or multi-hop chain is already handled.
+
+## Fifth candidate evaluation: green exit, visible advisory
+
+In a temporary synthetic tree, make a mutable derived file violate an enforced owner-only rule and a frozen attachment violate a report-only read-only rule. The check must fail for the former while showing both findings. Explicit repair may fix the mutable file but must leave the frozen attachment and its bytes unchanged. With only the advisory remaining, a successful exit must still display that advisory.
+
+Keep independent cases for root-directory and nested-directory symlinks; successful regular-file tests do not prove containment. File permissions and content hashes do not establish that an independent backup can be restored.
+
 ## Privacy boundary
 
 **Share the method. Protect the memory.**

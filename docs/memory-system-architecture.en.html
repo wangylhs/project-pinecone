@@ -28,6 +28,8 @@
         <a href="#evaluation">07 · Evaluation</a>
         <a href="#layout">08 · Reference layout</a>
         <a href="#fidelity">09 · Fidelity</a>
+        <a href="#contracts">10 · Retrieval contracts</a>
+        <a href="#boundaries">11 · Operational boundaries</a>
       </nav>
     </aside>
 
@@ -60,7 +62,7 @@
             <div class="arrow">→<small>build</small></div>
             <div class="node index">
               <div class="node-title">② Rebuildable retrieval data</div>
-              <ul><li>source catalog</li><li>bounded chunks</li><li>state projections</li><li>decision projections</li></ul>
+              <ul><li>label validation</li><li>source catalog</li><li>bounded chunks</li><li>state projections</li><li>decision projections</li></ul>
             </div>
             <div class="arrow">→<small>rank</small></div>
             <div class="node resolve">
@@ -209,6 +211,33 @@
           <div class="rung"><strong>Derived projection</strong><span>locator, not source</span></div>
         </div>
         <div class="callout"><div aria-hidden="true">✦</div><p><strong>Compact model:</strong> the archive remembers what happened; retrieval decides what matters now; the raw catalog knows where the evidence box lives; policy defines what the assistant may do.</p></div>
+      </section>
+
+
+      <section id="contracts">
+        <div class="section-head"><h2>Reject bad labels. Keep useful history.</h2><p>Two concrete mechanisms from the reviewed implementation, illustrated with a fictional expedition.</p></div>
+        <div class="layer-grid">
+          <article class="card"><span class="tag">INGEST · STRICT</span><h3>Canonical labels before publication</h3><p>Validate available state and decision records against config keys, including inactive history. An unknown label stops the build before index writes and identifies the file, record, field, and label.</p></article>
+          <article class="card"><span class="tag">QUERY · PERMISSIVE</span><h3>A typo is a warning</h3><p>An unknown user hint warns and querying continues. The runtime recognition set cannot validate stored data: a repeated typo must not make itself legal.</p></article>
+          <article class="card"><span class="tag">ALIAS · SCOPED</span><h3>“Observatory captain”, not every captain</h3><p>Prefer supported, specific aliases. Short common names can assign unrelated content to one entity. Canonical IDs need not have invented aliases.</p></article>
+          <article class="card"><span class="tag">HISTORY · ATTACHED</span><h3>New choice first, old reason second</h3><p>The expedition now uses an offline tablet. Its earlier paper-log decision remains useful as historical rationale, attached to its selected direct successor rather than competing as current advice.</p></article>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Synthetic input</th><th>Boundary</th><th>Expected observation</th></tr></thead><tbody>
+          <tr><td>stored topic: feild_test</td><td>Config defines field_test</td><td>Build fails; previous index remains</td></tr>
+          <tr><td>user hint: feild_test</td><td>Query input</td><td>Warning; query continues</td></tr>
+          <tr><td>tablet → paper rationale</td><td>Final context packet</td><td>Direct successor first; predecessor marked historical</td></tr>
+        </tbody></table></div>
+        <div class="callout"><strong>CHECK</strong><p>Decision attachment happens before packing. Evaluate successor adjacency again on the final packet, especially with tight budgets. Label membership is not full schema or file-presence validation; absent projection files are currently skipped.</p></div>
+      </section>
+      <section id="boundaries">
+        <div class="section-head"><h2>Make the remaining boundaries visible</h2><p>A reference pattern should distinguish working mechanisms from open experiments.</p></div>
+        <div class="layer-grid">
+          <article class="card"><span class="tag">IMPLEMENTED PATTERNS</span><h3>Observable, limited guarantees</h3><p>Build-time label checks, warning-only hints, direct-successor attachment, whole-label fidelity matching, and writer-enforced modes have implementation counterparts. Pinecone itself publishes documentation, not an engine.</p></article>
+          <article class="card"><span class="tag">WORKING COPY</span><h3>Permissions do not travel in Git</h3><p>Owner-only modes need writer enforcement and checks after checkout or restore. Frozen-input advisories remain visible but do not fail the check or authorize automatic repair. Directory-symlink containment remains a known limitation.</p></article>
+          <article class="card"><span class="tag">RECOVERY · OPEN</span><h3>Preserved is not independently backed up</h3><p>Rebuilding assumes durable inputs are available. Independent recovery and portable fixtures are separate work; hashes and local read-only modes cannot substitute for them.</p></article>
+          <article class="card"><span class="tag">EXPERIMENTS · OPEN</span><h3>Do not turn a proposal into a feature claim</h3><p>Separate challenge runners, calibrated evidence labels, full control-plane exclusion, and trace retention remain follow-up work. Temporal checkpoint logic has synthetic coverage, not proof of a live checkpoint.</p></article>
+        </div>
+        <p class="tagline">Read the <a href="assistant-memory-workflow.en.md">workflow details</a> and <a href="../DRAFT.md#third-candidate-evaluation-strict-data-permissive-input">synthetic evaluation cases</a>.</p>
       </section>
 
       <footer class="footer">Project Pinecone · Generalized from a private local system without carrying over its memories, identities, paths, or live data. Read the <a href="assistant-memory-workflow.en.md">assistant workflow</a>.</footer>
