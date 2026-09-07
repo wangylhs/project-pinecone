@@ -72,6 +72,10 @@ window.PINECONE_GRAPH = {
       en: "Fictional data throughout. Share the method. Protect the memory.",
       zh: "全部为虚构数据。Share the method. Protect the memory."
     },
+    demoDisclosure: {
+      en: "Scripted synthetic walkthrough · not live engine telemetry",
+      zh: "脚本化合成演示 · 非实时引擎数据"
+    },
     back: { en: "← Project Pinecone", zh: "← 返回 Project Pinecone" }
   },
 
@@ -444,11 +448,12 @@ window.PINECONE_GRAPH = {
         en: "Similarity is allowed to over-reach here. “Paper logbook” drags in a second expedition; a sentence about not liking something drags in powdered milk.",
         zh: "这一步故意让相似度「捞过界」。“paper logbook” 顺带把另一支远征队拉了进来；一句「不喜欢」把奶粉牛奶也拉了进来。"
       },
-      stat: { en: "10 candidates", zh: "10 个候选" },
+      stat: { en: "12 candidates", zh: "12 个候选" },
       candidate: [
         "decision.tablet", "decision.paper", "decision.harbor_logbook",
         "state.logging_medium", "state.paper_stock", "state.power_budget", "state.milk_dislike",
-        "topic.field_test", "topic.harbor_ops", "topic.provisions"
+        "topic.field_test", "topic.harbor_ops", "topic.provisions",
+        "person.harbor_captain", "session.006"
       ],
       pulse: ["e03", "e04", "e05", "e06", "e08", "e09", "e10", "e11", "e12", "e13"]
     },
@@ -459,8 +464,8 @@ window.PINECONE_GRAPH = {
         en: "Metadata restores the boundary that similarity blurred. Wrong entity, wrong topic, and a superseded state value all leave — and the old decision is held back rather than deleted.",
         zh: "相似度模糊掉的边界，由结构化 metadata 重新划回来。entity 不对、topic 不对、已被取代的 state 值，全部离场 —— 而那条旧 decision 是被「挡下」，不是被删掉。"
       },
-      stat: { en: "3 kept · 1 held · 6 rejected", zh: "保留 3 · 挡下 1 · 拒绝 6" },
-      keep: ["decision.tablet", "state.logging_medium", "state.power_budget"],
+      stat: { en: "4 kept · 1 held · 7 rejected", zh: "保留 4 · 挡下 1 · 拒绝 7" },
+      keep: ["decision.tablet", "state.logging_medium", "state.power_budget", "topic.field_test"],
       hold: [
         { id: "decision.paper", label: "conflicting_or_superseded",
           why: { en: "superseded — history only, until a successor pulls it in", zh: "已被取代 —— 只能作为历史，等后继来带它进场" } }

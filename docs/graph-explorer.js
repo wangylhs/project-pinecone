@@ -982,6 +982,7 @@
     el("asof-chip").innerHTML = "as_of <b></b>";
     el("asof-chip").lastChild.textContent = G.meta.asOf;
     el("world-chip").textContent = t(G.meta.world);
+    el("demo-chip").textContent = t(G.ui.demoDisclosure);
     el("footer-note").textContent = t(G.ui.footer);
     hullLabel.textContent = t(G.ui.packetTitle);
     el("fit").title = t(G.ui.fit);

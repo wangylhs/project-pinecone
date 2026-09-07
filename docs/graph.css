@@ -209,6 +209,10 @@ svg.stage.panning { cursor: grabbing; }
   font-size: .72rem;
 }
 .chip b { color: var(--text); font-weight: 600; }
+.chip.disclosure {
+  border-style: dashed;
+  color: var(--text);
+}
 .chip.stat { border-color: color-mix(in srgb, var(--accent) 40%, transparent); color: var(--accent); }
 
 .caption {
