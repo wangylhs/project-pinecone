@@ -768,7 +768,7 @@
     pre.className = "json";
     pre.hidden = true;
     pre.textContent = JSON.stringify({
-      query: t(byId["query.why_paper"].data.title),
+      query: t((G.nodes.filter(function (n) { return n.type === "query"; })[0] || {}).title || ""),
       as_of: G.meta.asOf,
       budget: { used: used, limit: G.meta.budget },
       items: packed.map(function (item) {

@@ -36,9 +36,11 @@ No build step or external dependency is required. Open `index.html` directly in 
 
 ## Memory Graph Explorer
 
-[`docs/memory-graph-explorer.html`](./docs/memory-graph-explorer.html) turns the same architecture into something you can poke at. Nodes are queries, people, topics, states, decisions and Sessions; edges are `related`, `source`, `supersedes` and `mentions`.
+[`docs/memory-graph-explorer.html`](./docs/memory-graph-explorer.html) turns the same architecture into something you can poke at. Nodes are the question, the people named in the records, the topics they sit under, and the records themselves; edges are `related`, `source` and `mentions`.
 
-Press **Start retrieval** and one question walks the graph in seven stages: hints are parsed, similarity over-recalls on purpose, structured metadata dims what does not belong, a passed checkpoint attaches a review note without changing rank, one superseded decision returns explicitly marked as history, provenance links back to canonical Sessions, and the survivors gather into a `Context Packet` with a visible token budget.
+Press **Start retrieval** and one question walks the graph in seven stages. A question made almost entirely of filler carries a single three-word anchor; plain token overlap puts the wrong record first; contiguity overtakes it; three negative controls are refused for three different stated reasons; a span that appears in nine records is disqualified by counting; provenance keeps the derived view behind the record it points at; and the survivors gather into a `Context Packet` with a visible token budget.
+
+The interesting frame is the second one, where the wrong answer is winning. That is not staged for drama — it is the state the ranking is actually in before word order is taken into account.
 
 Drag nodes, drag the background to pan, scroll to zoom, click any node for its fields and evidence labels. Step or replay at three speeds, switch EN/中文 and light/dark, or use *Cinema* for a clean full-width view when recording.
 

@@ -1,8 +1,8 @@
 /* Project Pinecone · Memory Graph Explorer — synthetic fixture.
  *
- * Every person, Session, decision and state below is fictional. The fixture
- * dramatizes the candidate evaluations written down in DRAFT.md; it does not
- * mirror any private memory workspace.
+ * Every person, record and joke below is fictional. The fixture dramatizes the
+ * sixth candidate evaluation in DRAFT.md — a named phrase against a chatty
+ * distractor — and does not mirror any private memory workspace.
  *
  * Share the method. Protect the memory.
  */
@@ -10,7 +10,7 @@
 window.PINECONE_GRAPH = {
   meta: {
     asOf: "2030-01-14",
-    budget: 1600,
+    budget: 1200,
     world: { en: "Aurora Ridge expedition · synthetic fixture", zh: "Aurora Ridge 远征 · 合成数据" }
   },
 
@@ -61,8 +61,8 @@ window.PINECONE_GRAPH = {
     pinned: { en: "pinned · double-click to release", zh: "已固定 · 双击解除" },
     asOf: { en: "as_of", zh: "as_of" },
     ready: {
-      en: "Ready. 19 fictional nodes, 32 relations, one question.",
-      zh: "准备就绪：19 个虚构节点、32 条关系、一个问题。"
+      en: "Ready. 11 fictional records, 16 relations, one question.",
+      zh: "准备就绪：11 条虚构记录、16 条关系、一个问题。"
     },
     kbd: {
       en: "Space play / pause · → step · R reset · F fit · C cinema",
@@ -82,33 +82,45 @@ window.PINECONE_GRAPH = {
   /* ------------------------------------------------------------- types --- */
 
   nodeTypes: {
-    query:    { name: { en: "query",    zh: "query · 提问" },     shape: "diamond" },
-    person:   { name: { en: "person",   zh: "person · 人物" },    shape: "circle" },
-    topic:    { name: { en: "topic",    zh: "topic · 主题" },     shape: "hexagon" },
-    state:    { name: { en: "state",    zh: "state · 当前状态" }, shape: "squircle" },
-    decision: { name: { en: "decision", zh: "decision · 决策" },  shape: "pentagon" },
-    session:  { name: { en: "Session",  zh: "Session · 来源" },   shape: "card" }
+    query:   { name: { en: "query",   zh: "query · 提问" },   shape: "diamond" },
+    person:  { name: { en: "person",  zh: "person · 人物" },  shape: "circle" },
+    topic:   { name: { en: "topic",   zh: "topic · 主题" },   shape: "hexagon" },
+    session: { name: { en: "record",  zh: "record · 记录" },  shape: "card" }
   },
 
   edgeTypes: {
-    related:    { name: { en: "related",    zh: "related · 相关" },     hint: { en: "topic or field overlap", zh: "topic / 字段重叠" } },
-    source:     { name: { en: "source",     zh: "source · 溯源" },      hint: { en: "provenance back to a canonical Session", zh: "回到 canonical Session 的 provenance" } },
-    supersedes: { name: { en: "supersedes", zh: "supersedes · 取代" },  hint: { en: "the successor of a changed choice", zh: "被改掉的选择及其后继" } },
-    mentions:   { name: { en: "mentions",   zh: "mentions · 提及" },    hint: { en: "an entity named by a record", zh: "记录里提到的 entity" } }
+    related:  { name: { en: "related",  zh: "related · 相关" }, hint: { en: "topic or field overlap", zh: "topic / 字段重叠" } },
+    source:   { name: { en: "source",   zh: "source · 溯源" },  hint: { en: "provenance back to a canonical record", zh: "回到 canonical 记录的 provenance" } },
+    mentions: { name: { en: "mentions", zh: "mentions · 提及" }, hint: { en: "a name used by a record", zh: "记录里提到的名字" } }
   },
 
   labels: {
-    provenance_supported:    { en: "selected through an explicit source link", zh: "通过显式 source link 选中" },
-    structured_context:      { en: "supported by topic, entity, state or decision fields", zh: "有 topic / entity / state / decision 字段支撑" },
-    lexical_only:            { en: "wording overlaps, nothing stronger supports it", zh: "只有字面重叠，没有更强的上下文支撑" },
-    checkpoint_passed:       { en: "a review date passed with no later confirmation", zh: "已过复核检查点且没有更新的确认" },
-    conflicting_or_superseded: { en: "useful as history, unsafe as current state", zh: "作为历史有用，作为当前状态不安全" }
+    rare_phrase: {
+      en: "holds the query words contiguously, and almost nothing else does",
+      zh: "按原顺序连续包含查询中的词，而几乎没有别的记录做到"
+    },
+    derived_view_rare_phrase: {
+      en: "restates the phrase beside the record it came from — half weight",
+      zh: "在原始记录旁转述了这个短语 —— 只给一半权重"
+    },
+    provenance_supported: {
+      en: "selected through an explicit source link",
+      zh: "通过显式 source link 选中"
+    },
+    structured_context: {
+      en: "supported by topic, entity, state or decision fields",
+      zh: "有 topic / entity / state / decision 字段支撑"
+    },
+    lexical_only: {
+      en: "wording overlaps, nothing stronger supports it",
+      zh: "只有字面重叠，没有更强的上下文支撑"
+    }
   },
 
   statuses: {
     candidate: { en: "recalled as a candidate", zh: "已作为候选召回" },
-    kept:      { en: "kept after structured filtering", zh: "通过结构化过滤，保留" },
-    held:      { en: "held back — history only", zh: "暂时挡下 — 只能作为历史" },
+    kept:      { en: "kept after the phrase signal", zh: "短语信号生效后保留" },
+    held:      { en: "held back — weaker copy of the evidence", zh: "暂时挡下 — 证据的较弱副本" },
     rejected:  { en: "rejected", zh: "被拒绝" },
     packed:    { en: "packed into the context packet", zh: "已打进 context packet" }
   },
@@ -117,75 +129,50 @@ window.PINECONE_GRAPH = {
 
   nodes: [
     {
-      id: "query.why_paper",
+      id: "query.velvet_teapot",
       type: "query",
-      name: { en: "Why paper logs?", zh: "当初为什么用纸质日志？" },
+      name: { en: "Our velvet teapot protocol?", zh: "我们那个 velvet teapot protocol？" },
       title: {
-        en: "Why did the expedition originally choose paper logs?",
-        zh: "远征队当初为什么选择纸质日志？"
+        en: "Remember our velvet teapot protocol?",
+        zh: "还记得我们那个 velvet teapot protocol 吗？"
       },
       body: {
-        en: "A history question about a choice that has since changed. It needs the current decision, the one it replaced, and the old rationale — not a fresh recommendation to go back to paper.",
-        zh: "这是一个关于「后来已经被改掉的选择」的历史问题。它需要当前 decision、被取代的旧 decision 和当年的理由，而不是把纸质日志重新推荐成现在的做法。"
+        en: "A question built almost entirely out of filler, with one three-word anchor carrying all of the meaning. Score it as an unordered bag of tokens and the anchor is worth no more than the filler around it.",
+        zh: "这句问话几乎全是寒暄，只有一个三词锚点承载了全部含义。如果按无序 token 集合打分，这个锚点并不比周围的寒暄更值钱。"
       },
       fields: [
         { k: "resolver", v: "RETRIEVE" },
         { k: "as_of", v: "2030-01-14" },
-        { k: "hints", v: "topic:logbook · entity:observatory_captain" }
+        { k: "ascii_run", v: "velvet teapot protocol" },
+        { k: "spans_tested", v: "velvet teapot · teapot protocol · velvet teapot protocol" }
       ]
     },
 
     {
-      id: "person.observatory_captain",
+      id: "person.claude",
       type: "person",
-      name: "observatory_captain",
-      title: { en: "Ivo Lund · observatory captain", zh: "Ivo Lund · observatory captain" },
+      name: "克劳德",
+      title: { en: "克劳德 · expedition companion", zh: "克劳德 · 远征队的同伴" },
       body: {
-        en: "A canonical entity ID. The alias “observatory captain” is accepted as a query hint; the bare word “captain” is never enough to bind a mention to this entity.",
-        zh: "canonical entity ID。别名 “observatory captain” 可以作为 query hint；但只写 “captain” 永远不足以把一条 mention 绑到这个 entity 上。"
+        en: "Named in most of the camp records, which is exactly why the name is useless for ranking here: a token that appears everywhere separates nothing.",
+        zh: "营地记录里到处都有这个名字，而这正是它在排序上没用的原因：一个到处都出现的 token，区分不了任何东西。"
       },
       fields: [
-        { k: "canonical_id", v: "observatory_captain" },
-        { k: "alias", v: "“observatory captain”" },
-        { k: "scope", v: "field_test" }
+        { k: "canonical_id", v: "claude" },
+        { k: "appears_in", v: "most records" }
       ]
-    },
-    {
-      id: "person.harbor_captain",
-      type: "person",
-      name: "harbor_captain",
-      title: { en: "Mira Sol · harbor captain", zh: "Mira Sol · harbor captain" },
-      body: {
-        en: "A second fictional project with its own captain. It exists so the graph can demonstrate that “captain” alone never resolves to the observatory entity.",
-        zh: "另一个虚构项目里的 captain。它存在的意义就是证明：单独一个 “captain” 不会被解析成 observatory 的那个 entity。"
-      },
-      fields: [
-        { k: "canonical_id", v: "harbor_captain" },
-        { k: "scope", v: "harbor_ops" }
-      ]
-    },
-    {
-      id: "person.field_engineer",
-      type: "person",
-      name: "field_engineer",
-      title: { en: "Tam Oyelaran · field engineer", zh: "Tam Oyelaran · field engineer" },
-      body: {
-        en: "Keeps the power log and the provisions list. Being adjacent to a kept state does not make every record about this person relevant.",
-        zh: "负责电力记录和补给清单。和一条被保留的 state 相邻，并不代表关于这个人的每条记录都相关。"
-      },
-      fields: [{ k: "canonical_id", v: "field_engineer" }, { k: "scope", v: "field_test" }]
     },
 
     {
-      id: "topic.logbook",
+      id: "topic.camp_jokes",
       type: "topic",
-      name: "logbook",
-      title: { en: "topic · logbook", zh: "topic · logbook" },
+      name: "camp_jokes",
+      title: { en: "topic · camp_jokes", zh: "topic · camp_jokes" },
       body: {
-        en: "How observations are recorded. The query hint lands here first, which is why recall starts from this node.",
-        zh: "记录观测的方式。query hint 首先落在这里，所以召回从这个节点开始扩散。"
+        en: "Running jokes that the crew named and kept reusing. The query hint lands here, so recall starts from this node.",
+        zh: "队员们起过名字、后来一直复用的玩笑。query hint 落在这里，所以召回从这个节点开始扩散。"
       },
-      fields: [{ k: "canonical_id", v: "logbook" }, { k: "records", v: "5" }]
+      fields: [{ k: "canonical_id", v: "camp_jokes" }]
     },
     {
       id: "topic.field_test",
@@ -193,238 +180,149 @@ window.PINECONE_GRAPH = {
       name: "field_test",
       title: { en: "topic · field_test", zh: "topic · field_test" },
       body: {
-        en: "The expedition scope. A record once carried the typo “feild_test”; strict label validation rejected the build, named the record and the field, and kept the previous index in place until it was fixed.",
-        zh: "远征的范围标签。曾经有条记录写成 “feild_test”；严格的 label validation 直接让这次构建失败、点名记录与字段，并保留上一版索引，直到拼写被改正。"
+        en: "The expedition scope. Adjacent to camp_jokes, which is how a supply list and a desk note get close enough to be considered at all.",
+        zh: "远征的范围标签。它和 camp_jokes 相邻 —— 这正是采购清单和一张便签得以进入候选的原因。"
       },
-      fields: [{ k: "canonical_id", v: "field_test" }, { k: "rejected_typo", v: "feild_test" }]
-    },
-    {
-      id: "topic.provisions",
-      type: "topic",
-      name: "provisions",
-      title: { en: "topic · provisions", zh: "topic · provisions" },
-      body: {
-        en: "Food and supply preferences. Adjacent to field_test, and that adjacency alone is what drags a milk sentence into a logbook question.",
-        zh: "食物与补给偏好。它和 field_test 相邻，而正是这种相邻，把一句关于牛奶的话拖进了关于日志的问题里。"
-      },
-      fields: [{ k: "canonical_id", v: "provisions" }]
-    },
-    {
-      id: "topic.harbor_ops",
-      type: "topic",
-      name: "harbor_ops",
-      title: { en: "topic · harbor_ops", zh: "topic · harbor_ops" },
-      body: {
-        en: "The other project's scope. Same vocabulary, different world.",
-        zh: "另一个项目的范围。词汇一样，世界不一样。"
-      },
-      fields: [{ k: "canonical_id", v: "harbor_ops" }]
+      fields: [{ k: "canonical_id", v: "field_test" }]
     },
 
     {
-      id: "state.logging_medium",
-      type: "state",
-      name: "state.logging_medium",
+      id: "session.week12_review",
+      type: "session",
+      name: { en: "Week 12 review", zh: "第 12 周复盘" },
       title: {
-        en: "Observations are recorded on the offline tablet.",
-        zh: "观测记录写在离线平板上。"
+        en: "Week 12 review · “Velvet Teapot Protocol”",
+        zh: "第 12 周复盘 · 「Velvet Teapot Protocol」"
       },
       body: {
-        en: "A time-aware state with no TTL. expected_resolution_at is a checkpoint, not an expiry date: past it with no later confirmation, the state keeps its rank and gains a visible review note.",
-        zh: "带时间信息但没有 TTL 的 state。expected_resolution_at 是复核检查点，不是失效日期：过了这个点又没有更新确认，它不会消失，而是保留原有排序、附上一条可见的复核提示。"
+        en: "The only record that actually holds the phrase, in order and adjacent. Note its fidelity: this is a summary, the weakest evidence tier here. It wins the ranking on the phrase and still gets reported as a summary — winning a rank never upgrades what kind of evidence something is.",
+        zh: "唯一真正按顺序、相邻地包含这个短语的记录。注意它的 fidelity：这是一份摘要，在这里属于最弱的证据等级。它靠短语赢下排名，但报告出来仍然是摘要 —— 赢得排名从不改变证据的身份。"
       },
       fields: [
-        { k: "observed_at", v: "2030-01-02" },
-        { k: "valid_from", v: "2030-01-02" },
-        { k: "valid_to", v: "null" },
-        { k: "last_confirmed_at", v: "2030-01-05" },
-        { k: "expected_resolution_at", v: "2030-01-10" },
-        { k: "status", v: "active" }
+        { k: "archive_format", v: "structured-session-summary" },
+        { k: "source_fidelity", v: "summary-only" },
+        { k: "holds_span", v: "velvet teapot protocol" },
+        { k: "date", v: "2030-01-08" }
       ]
     },
     {
-      id: "state.paper_stock",
-      type: "state",
-      name: "state.paper_stock",
-      title: { en: "Paper logs are the primary medium.", zh: "纸质日志是主要记录介质。" },
-      body: {
-        en: "A superseded state value. It stays readable as history and stays out of current state — a superseded state is never admitted as an answer about now.",
-        zh: "已经被取代的 state 值。它作为历史仍可读，但不会进入 current state —— 被 supersede 的状态永远不会被当成「现在」的答案。"
-      },
-      fields: [
-        { k: "valid_from", v: "2029-12-20" },
-        { k: "valid_to", v: "2030-01-02" },
-        { k: "status", v: "superseded" },
-        { k: "superseded_by", v: "state.logging_medium" }
-      ]
-    },
-    {
-      id: "state.power_budget",
-      type: "state",
-      name: "state.power_budget",
-      title: { en: "The solar bank holds a 40% reserve.", zh: "太阳能电池组保持 40% 余量。" },
-      body: {
-        en: "Why an offline tablet is affordable at all. Structured context, freshly confirmed, cheap to carry.",
-        zh: "离线平板之所以「用得起」的原因。结构化上下文，刚刚确认过，携带成本也低。"
-      },
-      fields: [
-        { k: "observed_at", v: "2030-01-11" },
-        { k: "last_confirmed_at", v: "2030-01-11" },
-        { k: "status", v: "active" }
-      ]
-    },
-    {
-      id: "state.milk_dislike",
-      type: "state",
-      name: "state.milk_dislike",
-      title: { en: "The crew does not like powdered milk.", zh: "队员不喜欢奶粉冲的牛奶。" },
-      body: {
-        en: "Similar wording, different context: a negative preference sentence that an embedding happily returns for a negative-preference question. Topic provisions and a stable-constraint shape are what put it back out.",
-        zh: "措辞相似、语境不同：一句「不喜欢」的话，embedding 很乐意把它返回给另一个「不喜欢」的问题。真正把它拦下来的，是 topic=provisions 和「稳定约束」这个形状。"
-      },
-      fields: [
-        { k: "observed_at", v: "2029-12-30" },
-        { k: "shape", v: "stable preference / constraint" },
-        { k: "status", v: "active" }
-      ]
-    },
-
-    {
-      id: "decision.paper",
-      type: "decision",
-      name: "decision.paper",
-      title: { en: "Chose a paper log, for simplicity.", zh: "当初选择纸质日志，因为够简单。" },
-      body: {
-        en: "The answer to the question asked — and the reason it must arrive labelled. Nothing to charge, nothing to crash, and a night shift can write with gloves on.",
-        zh: "这正是问题要的答案 —— 也正因为如此，它必须带着「历史」的标签出现。不用充电、不会崩，夜班戴着手套也能写。"
-      },
-      fields: [
-        { k: "status", v: "superseded" },
-        { k: "decided_at", v: "2030-01-02" },
-        { k: "superseded_by", v: "decision.tablet" }
-      ]
-    },
-    {
-      id: "decision.tablet",
-      type: "decision",
-      name: "decision.tablet",
-      title: {
-        en: "Chose an offline tablet, for searchable observations.",
-        zh: "改用离线平板，为了观测记录可检索。"
-      },
-      body: {
-        en: "The active decision and the anchor of the packet. Its direct predecessor is attached to it — one predecessor per selected successor, adjacent in the final packet.",
-        zh: "当前生效的 decision，也是这个 packet 的锚点。它的直接前身会被挂在它后面 —— 每个被选中的后继只带一个前身，并且在最终 packet 里紧邻。"
-      },
-      fields: [
-        { k: "status", v: "active" },
-        { k: "decided_at", v: "2030-01-05" },
-        { k: "supersedes", v: "decision.paper" }
-      ]
-    },
-    {
-      id: "decision.harbor_logbook",
-      type: "decision",
-      name: "decision.harbor_logbook",
-      title: { en: "The harbor crew keeps a bound paper logbook.", zh: "港口班组沿用装订的纸质航海日志。" },
-      body: {
-        en: "Almost the same sentence, a different entity and topic. Retrieval has to be tested on results, not on whether an alias exists in config.",
-        zh: "几乎是同一句话，但 entity 和 topic 都不同。要测的是真实检索结果，而不是「config 里有没有这个别名」。"
-      },
-      fields: [
-        { k: "status", v: "active" },
-        { k: "decided_at", v: "2029-12-18" },
-        { k: "entity", v: "harbor_captain" }
-      ]
-    },
-
-    {
-      id: "session.014",
+      id: "session.storm_night",
       type: "session",
-      name: "Session 014",
-      title: { en: "Session 014 · ridge camp setup", zh: "Session 014 · 山脊营地搭建" },
+      name: { en: "Storm night chat", zh: "暴风雪夜闲聊" },
+      title: { en: "Storm night · a long, warm conversation", zh: "暴风雪那晚 · 一段很长的闲聊" },
       body: {
-        en: "Where the paper log was chosen and written down with its reason. Canonical, dated, quotable.",
-        zh: "纸质日志在这里被选定，并连同理由一起写下。canonical、有日期、可引用。"
+        en: "Shares no phrase with the question — only filler: laughter, agreement, the companion's name, the shape of a friendly exchange. Under plain token overlap this record leads, because a segmented language contributes several overlapping units per generic word while a three-word anchor contributes three.",
+        zh: "它和问题没有任何短语重合，只有寒暄：笑、附和、同伴的名字、一段友好对话的形状。在纯 token 重合下它会排第一，因为按 n-gram 切分的语言，一个通用词就贡献好几个重叠单位，而三个词的锚点只贡献三个。"
       },
-      fields: [{ k: "date", v: "2030-01-02" }, { k: "fidelity", v: "verbatim" }]
+      fields: [
+        { k: "archive_format", v: "full-transcript" },
+        { k: "source_fidelity", v: "chronological-visible-dialogue" },
+        { k: "holds_span", v: "none" },
+        { k: "length", v: "long" }
+      ]
     },
     {
-      id: "session.019",
+      id: "view.favorites",
       type: "session",
-      name: "Session 019",
-      title: { en: "Session 019 · tablet trial", zh: "Session 019 · 平板试用" },
+      name: { en: "Favorites view", zh: "Favorites 派生视图" },
+      title: { en: "Favorites · a derived view", zh: "Favorites · 派生视图" },
       body: {
-        en: "The switch, and the last explicit confirmation of the logging state on 2030-01-05.",
-        zh: "改用平板的那一次，也是 logging state 在 2030-01-05 最后一次被明确确认的地方。"
+        en: "Restates the phrase next to the record it came from. A match here points at the evidence rather than being it, so it earns a fraction of the weight: the canonical record leads, and the view can still reach the packet behind it.",
+        zh: "它在原始记录旁边转述了这个短语。命中这里，指向的是证据本身，而不是证据本体，所以只给一部分权重：canonical 记录排在前面，派生视图仍然可以跟在后面进入 packet。"
       },
-      fields: [{ k: "date", v: "2030-01-05" }, { k: "fidelity", v: "verbatim" }]
+      fields: [
+        { k: "document_type", v: "derived_view" },
+        { k: "archive_format", v: "null" },
+        { k: "holds_span", v: "velvet teapot protocol" },
+        { k: "weight", v: "half" }
+      ]
     },
     {
-      id: "session.023",
+      id: "session.supply_list",
       type: "session",
-      name: "Session 023",
-      title: { en: "Session 023 · weekly review", zh: "Session 023 · 每周复盘" },
+      name: { en: "Supply list", zh: "采购清单" },
+      title: { en: "Supply list · every word, none adjacent", zh: "采购清单 · 词都在，但都不相邻" },
       body: {
-        en: "Power reserve and provisions were reviewed here. Notice what is missing: nobody re-confirmed the logging medium, which is exactly why a checkpoint note appears later.",
-        zh: "这里复盘了电力余量和补给。注意「没有发生的事」：没人再确认过记录介质，这正是后面会冒出复核提示的原因。"
+        en: "“The protocol page lists velvet curtains and a teapot.” Every word of the anchor is present and the record is scored for it — but no contiguous span of two or more survives, so it earns no phrase credit at all.",
+        zh: "「protocol 那一页写着 velvet 窗帘和 teapot 的采购清单。」锚点里的每个词都在，这条记录也因此被打了分 —— 但里面没有任何两个词是连续的，所以完全拿不到短语加分。"
       },
-      fields: [{ k: "date", v: "2030-01-11" }, { k: "fidelity", v: "summary" }]
+      fields: [
+        { k: "holds_words", v: "velvet · teapot · protocol" },
+        { k: "holds_span", v: "none" },
+        { k: "why", v: "not adjacent, not in query order" }
+      ]
     },
     {
-      id: "session.006",
+      id: "session.old_notes",
       type: "session",
-      name: "Session 006",
-      title: { en: "Session 006 · harbor handover", zh: "Session 006 · 港口交接" },
+      name: { en: "Old notes", zh: "旧笔记" },
+      title: { en: "Old notes · adjacent, but past a word boundary", zh: "旧笔记 · 相邻，但越过了词边界" },
       body: {
-        en: "The other project's source. Reachable in two hops, and never in this answer.",
-        zh: "另一个项目的来源。两跳就能走到，但永远不该出现在这个回答里。"
+        en: "“Only velvet teapots and teapot-protocol appear in the old notes.” Adjacency alone is not the rule: spans must match on whole words, so a plural and a hyphenated join both fall outside it.",
+        zh: "「旧笔记里只有 velvet teapots 和 teapot-protocol 这两个写法。」光相邻并不够：span 必须按完整词匹配，所以复数形式和连字符连写都落在规则之外。"
       },
-      fields: [{ k: "date", v: "2029-12-18" }, { k: "fidelity", v: "verbatim" }]
+      fields: [
+        { k: "holds_span", v: "none" },
+        { k: "near_forms", v: "velvet teapots · teapot-protocol" },
+        { k: "why", v: "word boundary" }
+      ]
+    },
+    {
+      id: "session.desk_note",
+      type: "session",
+      name: { en: "Desk note", zh: "桌上的便签" },
+      title: { en: "Desk note · “left it on the desk”", zh: "桌上的便签 ·「left it on the desk」" },
+      body: {
+        en: "Contains “on the desk”, a span rare enough to qualify on frequency alone. The edge rule is the only thing keeping it out: a function word may neither open nor close a span, because in a mostly-Chinese corpus “on the” is rare only because English is. Interior function words still count — “left it on the desk” would qualify.",
+        zh: "它包含 “on the desk”，单看频次完全够格。真正把它挡在外面的只有边缘规则：虚词不能作为 span 的开头或结尾 —— 在以中文为主的语料里，“on the” 之所以稀有，只是因为英文稀有。而 span 内部的虚词仍然算数：“left it on the desk” 就能命中。"
+      },
+      fields: [
+        { k: "holds_span", v: "on the desk" },
+        { k: "edge_stopwords", v: "on · the" },
+        { k: "why", v: "function word at the edge" }
+      ]
+    },
+    {
+      id: "session.joke_archive",
+      type: "session",
+      name: { en: "9 archived fragments", zh: "9 条归档碎片" },
+      title: { en: "Daily fragments · “shared joke” ×9", zh: "每日碎片 ·「shared joke」×9" },
+      body: {
+        en: "Nine short records that each contain the span “shared joke”. The ceiling is 8, so this span appears in too many records to be anybody's anchor — it is a recurring term. The rule is proven by counting, not by an exception list.",
+        zh: "九条短记录，每条都包含 “shared joke” 这个 span。上限是 8，所以这个 span 出现在太多记录里，不可能成为任何人的锚点 —— 它只是一个常用说法。这条规则是用数量证出来的，不是靠例外清单。"
+      },
+      fields: [
+        { k: "records", v: "9" },
+        { k: "span", v: "shared joke" },
+        { k: "max_chunk_frequency", v: "8" },
+        { k: "why", v: "above the frequency ceiling" }
+      ]
     }
   ],
 
   /* ------------------------------------------------------------- edges --- */
 
   edges: [
-    { id: "e01", from: "query.why_paper", to: "topic.logbook", kind: "mentions" },
-    { id: "e02", from: "query.why_paper", to: "person.observatory_captain", kind: "mentions" },
+    { id: "e01", from: "query.velvet_teapot", to: "topic.camp_jokes", kind: "mentions" },
+    { id: "e02", from: "query.velvet_teapot", to: "person.claude", kind: "mentions" },
 
-    { id: "e03", from: "topic.logbook", to: "topic.field_test", kind: "related" },
-    { id: "e04", from: "topic.logbook", to: "topic.harbor_ops", kind: "related" },
-    { id: "e05", from: "topic.field_test", to: "topic.provisions", kind: "related" },
+    { id: "e03", from: "topic.camp_jokes", to: "topic.field_test", kind: "related" },
 
-    { id: "e06", from: "decision.tablet", to: "topic.logbook", kind: "related" },
-    { id: "e07", from: "decision.tablet", to: "topic.field_test", kind: "related" },
-    { id: "e08", from: "decision.paper", to: "topic.logbook", kind: "related" },
-    { id: "e09", from: "decision.harbor_logbook", to: "topic.harbor_ops", kind: "related" },
-    { id: "e10", from: "state.logging_medium", to: "topic.logbook", kind: "related" },
-    { id: "e11", from: "state.paper_stock", to: "topic.logbook", kind: "related" },
-    { id: "e12", from: "state.power_budget", to: "topic.field_test", kind: "related" },
-    { id: "e13", from: "state.milk_dislike", to: "topic.provisions", kind: "related" },
+    { id: "e04", from: "session.week12_review", to: "topic.camp_jokes", kind: "related" },
+    { id: "e05", from: "session.storm_night", to: "topic.camp_jokes", kind: "related" },
+    { id: "e06", from: "view.favorites", to: "topic.camp_jokes", kind: "related" },
+    { id: "e07", from: "session.old_notes", to: "topic.camp_jokes", kind: "related" },
+    { id: "e08", from: "session.joke_archive", to: "topic.camp_jokes", kind: "related" },
+    { id: "e09", from: "session.supply_list", to: "topic.field_test", kind: "related" },
+    { id: "e10", from: "session.desk_note", to: "topic.field_test", kind: "related" },
 
-    { id: "e14", from: "decision.tablet", to: "person.observatory_captain", kind: "mentions" },
-    { id: "e15", from: "decision.paper", to: "person.observatory_captain", kind: "mentions" },
-    { id: "e16", from: "decision.harbor_logbook", to: "person.harbor_captain", kind: "mentions" },
-    { id: "e17", from: "state.logging_medium", to: "person.observatory_captain", kind: "mentions" },
-    { id: "e18", from: "state.power_budget", to: "person.field_engineer", kind: "mentions" },
-    { id: "e19", from: "state.milk_dislike", to: "person.field_engineer", kind: "mentions" },
+    { id: "e11", from: "session.week12_review", to: "person.claude", kind: "mentions" },
+    { id: "e12", from: "session.storm_night", to: "person.claude", kind: "mentions" },
+    { id: "e13", from: "view.favorites", to: "person.claude", kind: "mentions" },
+    { id: "e14", from: "session.joke_archive", to: "person.claude", kind: "mentions" },
 
-    { id: "e20", from: "decision.tablet", to: "decision.paper", kind: "supersedes" },
-    { id: "e21", from: "state.logging_medium", to: "state.paper_stock", kind: "supersedes" },
-
-    { id: "e22", from: "decision.paper", to: "session.014", kind: "source" },
-    { id: "e23", from: "decision.tablet", to: "session.019", kind: "source" },
-    { id: "e24", from: "state.logging_medium", to: "session.019", kind: "source" },
-    { id: "e25", from: "state.paper_stock", to: "session.014", kind: "source" },
-    { id: "e26", from: "state.power_budget", to: "session.023", kind: "source" },
-    { id: "e27", from: "state.milk_dislike", to: "session.023", kind: "source" },
-    { id: "e28", from: "decision.harbor_logbook", to: "session.006", kind: "source" },
-
-    { id: "e29", from: "session.014", to: "person.observatory_captain", kind: "mentions" },
-    { id: "e30", from: "session.019", to: "person.observatory_captain", kind: "mentions" },
-    { id: "e31", from: "session.023", to: "person.field_engineer", kind: "mentions" },
-    { id: "e32", from: "session.006", to: "person.harbor_captain", kind: "mentions" }
+    { id: "e15", from: "view.favorites", to: "session.week12_review", kind: "source" },
+    { id: "e16", from: "session.week12_review", to: "topic.field_test", kind: "related" }
   ],
 
   /* ------------------------------------------------------------ stages --- */
@@ -432,114 +330,105 @@ window.PINECONE_GRAPH = {
   stages: [
     {
       id: "parse",
-      name: { en: "Parse the question", zh: "解析问题" },
+      name: { en: "Find the anchor", zh: "找出锚点" },
       note: {
-        en: "The resolver answers RETRIEVE — not ASK, not SKIP — and pulls two permissive hints out of the wording.",
-        zh: "Resolver 判定为 RETRIEVE —— 不是 ASK，也不是 SKIP —— 并从措辞里抽出两个宽松 hints。"
+        en: "The resolver answers RETRIEVE and keeps the rare wording verbatim. One run of three adjacent ASCII words yields three candidate spans — generalize it to “our old joke” here and the anchor is gone before ranking starts.",
+        zh: "Resolver 判定 RETRIEVE，并把稀有措辞逐字保留。一段三个相邻的 ASCII 词产生三个候选 span —— 如果在这一步把它概括成「我们以前的梗」，锚点在排序开始前就已经没了。"
       },
-      stat: { en: "RETRIEVE · 2 hints", zh: "RETRIEVE · 2 条 hints" },
-      keep: ["query.why_paper", "topic.logbook", "person.observatory_captain"],
+      stat: { en: "RETRIEVE · 3 candidate spans", zh: "RETRIEVE · 3 个候选 span" },
+      keep: ["query.velvet_teapot", "topic.camp_jokes", "person.claude"],
       pulse: ["e01", "e02"]
     },
     {
       id: "recall",
-      name: { en: "Broad recall", zh: "广召回" },
+      name: { en: "Bag of tokens", zh: "词袋打分" },
       note: {
-        en: "Similarity is allowed to over-reach here. “Paper logbook” drags in a second expedition; a sentence about not liking something drags in powdered milk.",
-        zh: "这一步故意让相似度「捞过界」。“paper logbook” 顺带把另一支远征队拉了进来；一句「不喜欢」把奶粉牛奶也拉了进来。"
+        en: "Score by shared tokens alone and the wrong record leads. The storm-night chat shares only filler, but filler is plentiful; the anchor contributes three units total. Rarity weighting would not save it either — in a corpus that is mostly Chinese, the filler is about as rare as the English.",
+        zh: "只按共享 token 打分，领先的就是错的那条。暴风雪夜那段只共享了寒暄，但寒暄的量很大；而锚点总共只贡献三个单位。稀有度加权也救不了它 —— 在以中文为主的语料里，寒暄和英文一样稀有。"
       },
-      stat: { en: "12 candidates", zh: "12 个候选" },
+      stat: { en: "7 candidates · the distractor leads", zh: "7 个候选 · 干扰项领先" },
       candidate: [
-        "decision.tablet", "decision.paper", "decision.harbor_logbook",
-        "state.logging_medium", "state.paper_stock", "state.power_budget", "state.milk_dislike",
-        "topic.field_test", "topic.harbor_ops", "topic.provisions",
-        "person.harbor_captain", "session.006"
+        "session.storm_night", "session.week12_review", "view.favorites",
+        "session.supply_list", "session.old_notes", "session.desk_note",
+        "session.joke_archive"
       ],
-      pulse: ["e03", "e04", "e05", "e06", "e08", "e09", "e10", "e11", "e12", "e13"]
+      pulse: ["e03", "e04", "e05", "e06", "e07", "e08", "e09", "e10"]
     },
     {
-      id: "filter",
-      name: { en: "Structured filter", zh: "结构化过滤" },
+      id: "phrase",
+      name: { en: "Contiguity", zh: "连续性" },
       note: {
-        en: "Metadata restores the boundary that similarity blurred. Wrong entity, wrong topic, and a superseded state value all leave — and the old decision is held back rather than deleted.",
-        zh: "相似度模糊掉的边界，由结构化 metadata 重新划回来。entity 不对、topic 不对、已被取代的 state 值，全部离场 —— 而那条旧 decision 是被「挡下」，不是被删掉。"
+        en: "Word order is the evidence the token set threw away. One record holds “velvet teapot protocol” in order and adjacent, and the bounded bonus — worth roughly a dozen scattered token overlaps — is enough to overtake a much longer record. Bounded, not a filter: something sharing far more of the query could still win.",
+        zh: "词序正是 token 集合丢掉的那份证据。只有一条记录按原顺序、相邻地包含 “velvet teapot protocol”，而这个有界加分 —— 大约相当于十几个零散 token 重合 —— 足以反超一条长得多的记录。它是有界的，不是过滤器：共享了更多查询内容的记录仍然可能赢。"
       },
-      stat: { en: "4 kept · 1 held · 7 rejected", zh: "保留 4 · 挡下 1 · 拒绝 7" },
-      keep: ["decision.tablet", "state.logging_medium", "state.power_budget", "topic.field_test"],
-      hold: [
-        { id: "decision.paper", label: "conflicting_or_superseded",
-          why: { en: "superseded — history only, until a successor pulls it in", zh: "已被取代 —— 只能作为历史，等后继来带它进场" } }
-      ],
+      stat: { en: "anchor overtakes the distractor", zh: "锚点反超干扰项" },
+      keep: ["session.week12_review"],
+      badge: [{ id: "session.week12_review", label: "rare_phrase" }],
       reject: [
-        { id: "decision.harbor_logbook", label: "lexical_only",
-          why: { en: "entity is harbor_captain · “captain” alone binds nothing", zh: "entity 是 harbor_captain · 单独一个 “captain” 绑不了任何人" } },
-        { id: "topic.harbor_ops", why: { en: "out of scope", zh: "不在范围内" } },
-        { id: "person.harbor_captain", why: { en: "other project", zh: "另一个项目" } },
-        { id: "session.006", why: { en: "source of a rejected record", zh: "被拒记录的来源" } },
-        { id: "state.milk_dislike", label: "lexical_only",
-          why: { en: "topic is provisions · a stable preference, not this question", zh: "topic 是 provisions · 稳定偏好，与这个问题无关" } },
-        { id: "topic.provisions", why: { en: "not on the path", zh: "不在这条路径上" } },
-        { id: "state.paper_stock", label: "conflicting_or_superseded",
-          why: { en: "superseded state value · never current state", zh: "已被取代的 state 值 · 不可当作当前状态" } }
+        { id: "session.storm_night", label: "lexical_only",
+          why: { en: "filler only · holds no span of the anchor", zh: "只有寒暄 · 不包含锚点的任何 span" } }
       ],
-      pulse: ["e21"]
+      pulse: ["e04"]
     },
     {
-      id: "time",
-      name: { en: "Temporal check", zh: "时间检查" },
+      id: "guards",
+      name: { en: "Negative controls", zh: "反例" },
       note: {
-        en: "as_of 2030-01-14 is past expected_resolution_at 2030-01-10 and nobody re-confirmed. The state does not expire: it keeps its rank and carries a visible review note.",
-        zh: "as_of 2030-01-14 已越过 expected_resolution_at 2030-01-10，而且没人再确认过。这条 state 不会因此失效：排序不变，只是带上一条可见的复核提示。"
+        en: "The guards are what make the signal narrow rather than a second source of noise. Every record here shares words with the question and is scored for them; none earns phrase credit, and each is refused for a different, nameable reason.",
+        zh: "真正让这个信号「窄」而不是变成第二个噪声源的，是这些约束。这里每条记录都与问题共享词汇、也确实被打了分；但没有一条拿到短语加分，而且每条被拒的理由都不同、都能说清楚。"
       },
-      stat: { en: "advisory attached · ranking unchanged", zh: "附加提示 · 排序不变" },
-      badge: [{ id: "state.logging_medium", label: "checkpoint_passed" }],
-      pulse: ["e24"]
+      stat: { en: "3 refused · 3 different reasons", zh: "拒绝 3 条 · 3 个不同理由" },
+      reject: [
+        { id: "session.supply_list", label: "lexical_only",
+          why: { en: "every word, none adjacent", zh: "词都在，但没有一对相邻" } },
+        { id: "session.old_notes", label: "lexical_only",
+          why: { en: "adjacent, but “teapots” and “teapot-protocol” cross a word boundary", zh: "相邻，但 “teapots” 和 “teapot-protocol” 越过了词边界" } },
+        { id: "session.desk_note", label: "lexical_only",
+          why: { en: "a function word may not open or close a span", zh: "虚词不能作为 span 的开头或结尾" } }
+      ]
     },
     {
-      id: "history",
-      name: { en: "Decision history", zh: "决策历史" },
+      id: "ceiling",
+      name: { en: "Frequency ceiling", zh: "频次上限" },
       note: {
-        en: "One predecessor per selected successor. The old rationale comes back explicitly marked historical — preserved, never revived as current advice.",
-        zh: "每个被选中的后继，只带一个前身。旧的理由带着「历史」标记回来 —— 被保留，但不会被重新当成现在的建议。"
+        en: "A span that turns up everywhere is a common expression, not somebody's anchor. “shared joke” appears in nine records against a ceiling of eight, so it is disqualified by counting rather than by anyone adding it to a stop list.",
+        zh: "到处都出现的 span 是常用说法，不是谁的锚点。“shared joke” 出现在九条记录里，而上限是八 —— 它是被数量取消资格的，不是靠谁把它加进停用词表。"
       },
-      stat: { en: "decision.tablet → decision.paper", zh: "decision.tablet → decision.paper" },
-      keep: ["decision.paper"],
-      badge: [{ id: "decision.paper", label: "conflicting_or_superseded" }],
-      pulse: ["e20"]
+      stat: { en: "9 records > ceiling 8", zh: "9 条记录 > 上限 8" },
+      reject: [
+        { id: "session.joke_archive", label: "lexical_only",
+          why: { en: "“shared joke” is a recurring term, not an anchor", zh: "“shared joke” 是常用说法，不是锚点" } }
+      ],
+      pulse: ["e08"]
     },
     {
       id: "provenance",
-      name: { en: "Provenance", zh: "溯源" },
+      name: { en: "Canonical first", zh: "正本优先" },
       note: {
-        en: "Every surviving claim keeps a path back to a canonical Session. What cannot be traced does not get to speak.",
-        zh: "每一条存活下来的说法，都保留一条回到 canonical Session 的路径。追不回来的，就没有发言权。"
+        en: "The derived view holds the same phrase, so it is recalled too — at half weight, and behind the record it points at. A match in a view indicates where the evidence lives; it is not the evidence. Provenance is what keeps that ordering honest.",
+        zh: "派生视图也包含同一个短语，所以它同样被召回 —— 但只有一半权重，而且排在它所指向的记录后面。命中视图说明的是「证据在哪」，它本身不是证据。保证这个顺序诚实的，就是 provenance。"
       },
-      stat: { en: "3 Sessions linked", zh: "关联 3 个 Session" },
-      keep: ["session.019", "session.014", "session.023"],
+      stat: { en: "canonical record → derived view", zh: "canonical 记录 → 派生视图" },
+      keep: ["view.favorites"],
       badge: [
-        { id: "decision.tablet", label: "provenance_supported" },
-        { id: "decision.paper", label: "provenance_supported" },
-        { id: "state.logging_medium", label: "provenance_supported" },
-        { id: "state.power_budget", label: "structured_context" }
+        { id: "session.week12_review", label: "provenance_supported" },
+        { id: "view.favorites", label: "derived_view_rare_phrase" },
+        { id: "topic.camp_jokes", label: "structured_context" }
       ],
-      pulse: ["e23", "e22", "e24", "e26"]
+      pulse: ["e15"]
     },
     {
       id: "pack",
       name: { en: "Context Packet", zh: "打包 Context Packet" },
       note: {
-        en: "Adjacency is verified on the finished packet, not on candidate order: the historical decision sits directly behind the successor that admitted it.",
-        zh: "相邻关系要在「成品 packet」上验证，而不是在候选排序上：那条历史 decision 必须紧挨着带它进来的后继。"
+        en: "The packet is small, and the guards are why. Six records were recalled and four were refused for stated reasons, leaving the canonical record, the view that points at it, and the scope. A small packet you can read beats a large one you have to trust.",
+        zh: "这个 packet 很小，而正是那些约束让它变小的。召回了六条记录、按明确理由拒掉四条，最后只剩 canonical 记录、指向它的视图，以及范围标签。一个你读得完的小 packet，好过一个你只能选择相信的大 packet。"
       },
-      stat: { en: "1,220 / 1,600 tokens", zh: "1,220 / 1,600 tokens" },
+      stat: { en: "630 / 1,200 tokens", zh: "630 / 1,200 tokens" },
       pack: [
-        { id: "decision.tablet", cost: 340, tag: { en: "active decision", zh: "当前 decision" } },
-        { id: "decision.paper", cost: 280, tag: { en: "historical · direct predecessor", zh: "历史 · 直接前身" } },
-        { id: "state.logging_medium", cost: 250, tag: { en: "current state · review note", zh: "当前 state · 附复核提示" } },
-        { id: "state.power_budget", cost: 170, tag: { en: "supporting state", zh: "支撑性 state" } },
-        { id: "session.019", cost: 60, tag: { en: "source", zh: "来源" } },
-        { id: "session.014", cost: 60, tag: { en: "source", zh: "来源" } },
-        { id: "session.023", cost: 60, tag: { en: "source", zh: "来源" } }
+        { id: "session.week12_review", cost: 380, tag: { en: "canonical record · holds the phrase", zh: "canonical 记录 · 包含该短语" } },
+        { id: "view.favorites", cost: 160, tag: { en: "derived view · follows the canonical record", zh: "派生视图 · 跟在 canonical 记录之后" } },
+        { id: "topic.camp_jokes", cost: 90, tag: { en: "scope", zh: "范围" } }
       ]
     }
   ]

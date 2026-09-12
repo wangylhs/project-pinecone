@@ -245,14 +245,16 @@ words ("what does custard mean?") must not open retrieval at all.
 ## Visual map: the Memory Graph Explorer
 
 `docs/memory-graph-explorer.html` is the first answer to "how should the visual
-map evolve." It is an interactive graph of queries, people, topics, states,
-decisions and Sessions, connected by `related`, `source`, `supersedes` and
-`mentions`. One scripted run walks the seven stages above: hints, deliberate
-over-recall, structured filtering, the checkpoint advisory, one attached
-predecessor, provenance, and a packed context packet with a visible budget.
+map evolve." It is an interactive graph of one query, the people named in the
+records, the topics they sit under, and the records themselves, connected by
+`related`, `source` and `mentions`. One scripted run walks the sixth candidate
+evaluation above: find the anchor, score by tokens alone and watch the wrong
+record lead, let contiguity overtake it, refuse three negative controls for
+three different reasons, disqualify a span by frequency, keep the derived view
+behind its canonical record, and pack what survives against a visible budget.
 
 It stays honest about what it is. The scenario is the Aurora Ridge expedition —
-entirely fictional, built to dramatize the candidate evaluations in this
+entirely fictional, built to dramatize one candidate evaluation from this
 document, not to depict any real workspace. The whole fixture lives in one
 readable file (`docs/graph-data.js`), so a different story is a data edit, not a
 rewrite.
