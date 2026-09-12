@@ -421,8 +421,8 @@ window.PINECONE_GRAPH = {
       id: "pack",
       name: { en: "Context Packet", zh: "打包 Context Packet" },
       note: {
-        en: "The packet is small, and the guards are why. Six records were recalled and four were refused for stated reasons, leaving the canonical record, the view that points at it, and the scope. A small packet you can read beats a large one you have to trust.",
-        zh: "这个 packet 很小，而正是那些约束让它变小的。召回了六条记录、按明确理由拒掉四条，最后只剩 canonical 记录、指向它的视图，以及范围标签。一个你读得完的小 packet，好过一个你只能选择相信的大 packet。"
+        en: "The packet is small, and the guards are why. Seven records were recalled and five were refused for stated reasons, leaving the canonical record, the view that points at it, and the scope. A small packet you can read beats a large one you have to trust.",
+        zh: "这个 packet 很小，而正是那些约束让它变小的。召回了七条记录、按明确理由拒掉五条，最后只剩 canonical 记录、指向它的视图，以及范围标签。一个你读得完的小 packet，好过一个你只能选择相信的大 packet。"
       },
       stat: { en: "630 / 1,200 tokens", zh: "630 / 1,200 tokens" },
       pack: [
