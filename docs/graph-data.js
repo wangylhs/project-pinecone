@@ -133,16 +133,17 @@ window.PINECONE_GRAPH = {
       type: "query",
       name: { en: "Our velvet teapot protocol?", zh: "我们那个 velvet teapot protocol？" },
       title: {
-        en: "Remember our velvet teapot protocol?",
-        zh: "还记得我们那个 velvet teapot protocol 吗？"
+        en: "克劳德, remember our velvet teapot protocol?",
+        zh: "克劳德，还记得我们那个 velvet teapot protocol 吗？"
       },
       body: {
-        en: "A question built almost entirely out of filler, with one three-word anchor carrying all of the meaning. Score it as an unordered bag of tokens and the anchor is worth no more than the filler around it.",
-        zh: "这句问话几乎全是寒暄，只有一个三词锚点承载了全部含义。如果按无序 token 集合打分，这个锚点并不比周围的寒暄更值钱。"
+        en: "Almost entirely filler. It names the companion — a name that appears in nearly every record and therefore separates nothing — and it carries one three-word anchor that means everything. Both are real signals; only one of them can answer the question, and an unordered bag of tokens cannot tell which.",
+        zh: "几乎全是寒暄。它点了同伴的名字 —— 一个几乎每条记录里都有、因此毫无区分力的名字 —— 同时带着一个三词锚点，全部含义都在那三个词上。两者都是真实信号，但只有一个能回答这个问题，而无序 token 集合分不出是哪一个。"
       },
       fields: [
         { k: "resolver", v: "RETRIEVE" },
         { k: "as_of", v: "2030-01-14" },
+        { k: "hints", v: "topic:camp_jokes · person:克劳德" },
         { k: "ascii_run", v: "velvet teapot protocol" },
         { k: "spans_tested", v: "velvet teapot · teapot protocol · velvet teapot protocol" }
       ]
@@ -154,8 +155,8 @@ window.PINECONE_GRAPH = {
       name: "克劳德",
       title: { en: "克劳德 · expedition companion", zh: "克劳德 · 远征队的同伴" },
       body: {
-        en: "Named in most of the camp records, which is exactly why the name is useless for ranking here: a token that appears everywhere separates nothing.",
-        zh: "营地记录里到处都有这个名字，而这正是它在排序上没用的原因：一个到处都出现的 token，区分不了任何东西。"
+        en: "Named in the question and in nearly every camp record, which is exactly why the name cannot answer it: a token that appears everywhere separates nothing. A real hint and a useless one at the same time.",
+        zh: "问题里点了这个名字，而几乎每条营地记录里也都有它 —— 这正是它回答不了这个问题的原因：一个到处都出现的 token，区分不了任何东西。它同时是一个真实的线索，和一个没用的线索。"
       },
       fields: [
         { k: "canonical_id", v: "claude" },
@@ -343,8 +344,8 @@ window.PINECONE_GRAPH = {
       id: "recall",
       name: { en: "Bag of tokens", zh: "词袋打分" },
       note: {
-        en: "Score by shared tokens alone and the wrong record leads. The storm-night chat shares only filler, but filler is plentiful; the anchor contributes three units total. Rarity weighting would not save it either — in a corpus that is mostly Chinese, the filler is about as rare as the English.",
-        zh: "只按共享 token 打分，领先的就是错的那条。暴风雪夜那段只共享了寒暄，但寒暄的量很大；而锚点总共只贡献三个单位。稀有度加权也救不了它 —— 在以中文为主的语料里，寒暄和英文一样稀有。"
+        en: "Score by shared tokens alone and the wrong record leads. The storm-night chat shares the companion's name and a great deal of filler; the anchor contributes three units in total. Rarity weighting would not save it either — in a corpus that is mostly Chinese, the filler is about as rare as the English.",
+        zh: "只按共享 token 打分，领先的就是错的那条。暴风雪夜那段共享了同伴的名字和大量寒暄；而锚点总共只贡献三个单位。稀有度加权也救不了它 —— 在以中文为主的语料里，寒暄和英文一样稀有。"
       },
       stat: { en: "7 candidates · the distractor leads", zh: "7 个候选 · 干扰项领先" },
       candidate: [
