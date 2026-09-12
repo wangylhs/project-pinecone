@@ -8,8 +8,6 @@
   --g-query: var(--accent);
   --g-person: var(--blue);
   --g-topic: var(--green);
-  --g-state: var(--teal);
-  --g-decision: var(--purple);
   --g-session: var(--gold);
   --panel: color-mix(in srgb, var(--surface) 88%, transparent);
   --dock: color-mix(in srgb, var(--surface) 92%, transparent);
@@ -283,9 +281,7 @@ svg.stage.panning { cursor: grabbing; }
 .edge.kind-related { stroke: color-mix(in srgb, var(--muted) 55%, transparent); }
 .edge.kind-mentions { stroke: color-mix(in srgb, var(--blue) 60%, transparent); stroke-dasharray: 2 5; stroke-linecap: round; }
 .edge.kind-source { stroke: color-mix(in srgb, var(--gold) 72%, transparent); stroke-dasharray: 7 5; }
-.edge.kind-supersedes { stroke: color-mix(in srgb, var(--purple) 78%, transparent); stroke-width: 2.2; }
 .edge.on { stroke-width: 2.6; opacity: 1; }
-.edge.kind-supersedes.on { stroke-width: 3.4; }
 .edge.off { opacity: .1; }
 .stage.has-run .edge { opacity: .22; }
 .stage.has-run .edge.on { opacity: 1; }
@@ -353,8 +349,6 @@ svg.stage.panning { cursor: grabbing; }
 .gnode.type-query { --nc: var(--g-query); }
 .gnode.type-person { --nc: var(--g-person); }
 .gnode.type-topic { --nc: var(--g-topic); }
-.gnode.type-state { --nc: var(--g-state); }
-.gnode.type-decision { --nc: var(--g-decision); }
 .gnode.type-session { --nc: var(--g-session); }
 
 .stage.has-run .gnode { opacity: .34; }
