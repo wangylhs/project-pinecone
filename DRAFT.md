@@ -207,6 +207,41 @@ In a temporary synthetic tree, make a mutable derived file violate an enforced o
 
 Keep independent cases for root-directory and nested-directory symlinks; successful regular-file tests do not prove containment. File permissions and content hashes do not establish that an independent backup can be restored.
 
+## Sixth candidate evaluation: a named phrase against a chatty distractor
+
+A bag-of-tokens scorer cannot see word order, and in a mixed-language corpus that
+failure has a specific shape worth capturing as a case.
+
+```text
+Anchor record:     one expedition log entry recording the joke
+                   "the glacier custard incident"
+Distractor:        a long, friendly camp conversation sharing only
+                   generic wording and filler
+Query:             "remember our glacier custard incident?"
+```
+
+The distractor wins under plain token overlap: segmented filler contributes many
+overlapping units while the three-word anchor contributes few. Rarity weighting
+does not rescue it, because in a corpus dominated by one language the filler is
+about as rare as the foreign words. The separating evidence is that the anchor's
+words appear *in order and adjacent* in exactly one record.
+
+The case is only meaningful together with its negative controls, which are what
+prove the signal did not simply become a second source of noise:
+
+| Variant | Expected |
+| --- | --- |
+| `glacier custard incident` in one record | Anchor leads |
+| `incident custard glacier` | No phrase credit |
+| `glacier-custard-incident` | No phrase credit |
+| `custard` alone | No phrase credit; it is already a token |
+| A span appearing in many records | No phrase credit; it is a common term |
+| A span opening with a function word | No phrase credit |
+| An index page restating the phrase | Ranks behind the canonical record |
+
+Extend it with a `SKIP` control: an unrelated question containing one of the same
+words ("what does custard mean?") must not open retrieval at all.
+
 ## Visual map: the Memory Graph Explorer
 
 `docs/memory-graph-explorer.html` is the first answer to "how should the visual

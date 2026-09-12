@@ -24,6 +24,10 @@ The architecture covers:
 - working-copy permissions, advisory checks, and recovery boundaries;
 - separate regression and challenge/probe evaluation lanes (the latter remains a design pattern);
 - explainable weak-evidence labels for heterogeneous rankers;
+- contiguous-phrase ranking, so word order survives a bag-of-tokens scorer;
+- control-plane exclusion expressed as a rule rather than a list of noticed paths;
+- traces that expire on a schedule and explain every rejection they record;
+- retrieval-intent parsing measured against a declared ceiling it has not yet met;
 - metadata-only raw catalogs and default-off cold retrieval;
 - targeted source revival with integrity verification;
 - ownership, evidence fidelity, privacy, and failure boundaries.

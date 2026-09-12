@@ -232,10 +232,10 @@
       <section id="boundaries">
         <div class="section-head"><h2>让尚未解决的边界看得见。</h2><p>参考架构应明确区分已有机制与实验设想。</p></div>
         <div class="layer-grid">
-          <article class="card"><span class="tag">已落地机制</span><h3>可观察、有范围的保证</h3><p>Build 标签检查、hint 只警告、旧决策附带直接后继、完整 fidelity 标签匹配和 writer 设置权限均有对应实现。Pinecone 本身发布文档，不包含检索引擎。</p></article>
+          <article class="card"><span class="tag">已落地机制</span><h3>可观察、有范围的保证</h3><p>Build 标签检查、hint 只警告、旧决策附带直接后继、完整 fidelity 标签匹配、writer 设置权限、按规则排除 control-plane、连续短语排序，以及会过期且自带理由的 trace，均有对应实现。Pinecone 本身发布文档，不包含检索引擎。</p></article>
           <article class="card"><span class="tag">工作副本</span><h3>权限不会随 Git 传播</h3><p>Owner-only mode 需要 writer 落实，并在检出或恢复后检查。冻结输入的 advisory 保持可见，但不使检查失败，也不授权自动修复。目录软链接隔离仍有已知限制。</p></article>
-          <article class="card"><span class="tag">恢复 · 待完成</span><h3>已保留不等于有独立备份</h3><p>重建的前提是 durable input 可用。独立恢复与可移植 fixture 是另外的工作，hash 和本地只读权限不能替代它们。</p></article>
-          <article class="card"><span class="tag">实验 · 待推进</span><h3>不把提案写成已实现功能</h3><p>独立 challenge runner、校准后的证据标签、完整 control-plane 排除和 trace 生命周期仍是后续工作。时间 checkpoint 逻辑有合成覆盖，不代表已有真实检查点。</p></article>
+          <article class="card"><span class="tag">恢复 · 已实测</span><h3>没恢复过的备份只是猜测</h3><p>只存在一份的目录会逐个文件与外部副本比对，并且做过一次恢复演练。刷新仍是手动的，所以诚实的说法是「截至上次检查为止已验证」——而这正是检查会报告的内容。</p></article>
+          <article class="card"><span class="tag">实验 · 待推进</span><h3>不把提案写成已实现功能</h3><p>独立 challenge runner 与校准后的证据标签仍是后续工作。Retrieval intent 解析已对照一个尚未达标的上限做测量，把这件事说出来本身就是重点。时间 checkpoint 逻辑有合成覆盖，不代表已有真实检查点。</p></article>
         </div>
         <p class="tagline">继续阅读<a href="assistant-memory-workflow.zh.md">工作流细节</a>与<a href="../DRAFT.md#third-candidate-evaluation-strict-data-permissive-input">合成验收案例</a>。</p>
       </section>
