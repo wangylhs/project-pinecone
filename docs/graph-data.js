@@ -133,7 +133,7 @@ window.PINECONE_GRAPH = {
       type: "query",
       name: { en: "Our velvet teapot protocol?", zh: "我们那个 velvet teapot protocol？" },
       title: {
-        en: "克劳德, remember our velvet teapot protocol?",
+        en: "Claude, remember our velvet teapot protocol?",
         zh: "克劳德，还记得我们那个 velvet teapot protocol 吗？"
       },
       body: {
@@ -143,7 +143,7 @@ window.PINECONE_GRAPH = {
       fields: [
         { k: "resolver", v: "RETRIEVE" },
         { k: "as_of", v: "2030-01-14" },
-        { k: "hints", v: "topic:camp_jokes · person:克劳德" },
+        { k: "hints", v: "topic:camp_jokes · person:claude" },
         { k: "ascii_run", v: "velvet teapot protocol" },
         { k: "spans_tested", v: "velvet teapot · teapot protocol · velvet teapot protocol" }
       ]
@@ -152,8 +152,8 @@ window.PINECONE_GRAPH = {
     {
       id: "person.claude",
       type: "person",
-      name: "克劳德",
-      title: { en: "克劳德 · expedition companion", zh: "克劳德 · 远征队的同伴" },
+      name: { en: "Claude", zh: "克劳德" },
+      title: { en: "Claude · expedition companion", zh: "克劳德 · 远征队的同伴" },
       body: {
         en: "Named in the question and in nearly every camp record, which is exactly why the name cannot answer it: a token that appears everywhere separates nothing. A real hint and a useless one at the same time.",
         zh: "问题里点了这个名字，而几乎每条营地记录里也都有它 —— 这正是它回答不了这个问题的原因：一个到处都出现的 token，区分不了任何东西。它同时是一个真实的线索，和一个没用的线索。"
