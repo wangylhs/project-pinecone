@@ -516,4 +516,40 @@ body.cinema .topbar .back, body.cinema .topbar .brand span { display: none; }
   .zoomers { top: 14px; right: 14px; bottom: auto; grid-auto-flow: column; }
   .topbar { flex-wrap: wrap; }
   .topbar .back { display: none; }
+
+  /* The chips are an overlay on the canvas, not a header above it. Allowed to
+     wrap they took 179px of a 503px stage -- 38% -- and four nodes sat behind
+     them, three of which are the negative controls this walkthrough exists to
+     show. One scrollable row keeps every chip reachable, disclosure included,
+     without spending the graph's height on them.
+
+     pointer-events must come back on: .overlay sets none and restores it only
+     on children, so without this the row cannot be dragged -- the touch would
+     fall through to the canvas underneath. */
+  .hud {
+    flex-wrap: nowrap;
+    gap: 6px;
+    max-width: calc(100% - 172px); /* keep clear of .zoomers, pinned top-right */
+    overflow-x: auto;
+    pointer-events: auto;
+    scrollbar-width: none;
+  }
+  .hud::-webkit-scrollbar { display: none; }
+  .chip { white-space: nowrap; }
+
+  /* The dock wrapped into two rows and left its separator stranded on the
+     first. Held to one row it gives the canvas back another ~44px; the
+     horizontal scroll is a fallback for very narrow screens rather than the
+     normal case. */
+  .dock {
+    flex-wrap: nowrap;
+    gap: 6px;
+    padding: 6px;
+    max-width: calc(100% - 20px);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .dock::-webkit-scrollbar { display: none; }
+  .dock .sep { display: none; }
+  .dock .btn, .dock .seg button { padding: 6px 10px; font-size: .76rem; }
 }
