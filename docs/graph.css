@@ -527,15 +527,20 @@ body.cinema .topbar .back, body.cinema .topbar .brand span { display: none; }
      on children, so without this the row cannot be dragged -- the touch would
      fall through to the canvas underneath. */
   .hud {
+    top: 58px; /* its own line, below the zoom controls pinned at top right */
     flex-wrap: nowrap;
     gap: 6px;
-    max-width: calc(100% - 172px); /* keep clear of .zoomers, pinned top-right */
     overflow-x: auto;
     pointer-events: auto;
     scrollbar-width: none;
   }
   .hud::-webkit-scrollbar { display: none; }
   .chip { white-space: nowrap; }
+  /* Sharing a line with the zoom controls left 203px for 1314px of chips: one
+     chip visible, and the disclosure was not it. A full-width line below them
+     shows far more, and the disclosure leads so that the one label that must
+     not hide is the one you see first. */
+  .chip.disclosure { order: -1; }
 
   /* The dock wrapped into two rows and left its separator stranded on the
      first. Held to one row it gives the canvas back another ~44px; the
@@ -551,5 +556,7 @@ body.cinema .topbar .back, body.cinema .topbar .brand span { display: none; }
   }
   .dock::-webkit-scrollbar { display: none; }
   .dock .sep { display: none; }
-  .dock .btn, .dock .seg button { padding: 6px 10px; font-size: .76rem; }
+  /* nowrap is the fix here: squeezing the padding alone broke "Start retrieval"
+     onto three lines and made the dock taller, not shorter. */
+  .dock .btn, .dock .seg button { padding: 7px 11px; font-size: .78rem; white-space: nowrap; }
 }
