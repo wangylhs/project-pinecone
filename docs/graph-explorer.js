@@ -469,6 +469,66 @@
 
   /* --------------------------------------------------------- interaction -- */
 
+  /* Two-finger zoom.
+
+     touch-action is none, which the one-finger pan needs -- without it a drag
+     scrolls the page instead of moving the graph. The cost is that the browser
+     also stops handling pinch, and wheel never fires on a touch screen, so a
+     phone had no way to zoom at all.
+
+     The bookkeeping listens in the capture phase because a finger that lands on
+     a node never reaches this element: wireNode calls stopPropagation. Capture
+     runs first, so every pointer is counted wherever it started.
+
+     Single-pointer behaviour is deliberately untouched. A mouse cannot produce
+     a second pointer, so on a desktop `pinch` is always null and the existing
+     pan and drag paths run exactly the statements they ran before, plus one
+     null check. */
+  var pointers = new Map();
+  var pinch = null;
+  var pinchJustEnded = false;
+
+  function pinchPoints() {
+    var pts = [];
+    pointers.forEach(function (p) { pts.push(p); });
+    return pts;
+  }
+  function pinchDist() {
+    var p = pinchPoints();
+    return Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y);
+  }
+  function pinchMid() {
+    var p = pinchPoints();
+    return { clientX: (p[0].x + p[1].x) / 2, clientY: (p[0].y + p[1].y) / 2 };
+  }
+
+  svg.addEventListener("pointerdown", function (evt) {
+    pointers.set(evt.pointerId, { x: evt.clientX, y: evt.clientY });
+    if (pointers.size === 1) pinchJustEnded = false;
+    if (pointers.size === 2) pinch = { dist: pinchDist() };
+  }, true);
+
+  svg.addEventListener("pointermove", function (evt) {
+    if (!pointers.has(evt.pointerId)) return;
+    pointers.set(evt.pointerId, { x: evt.clientX, y: evt.clientY });
+    if (!pinch || pointers.size !== 2) return;
+    var d = pinchDist();
+    /* zoomAt keeps the point under the midpoint fixed, so feeding it the
+       current midpoint each move gives two-finger panning for free. */
+    if (d > 0 && pinch.dist > 0) {
+      var m = localPoint(pinchMid());
+      zoomAt(m.x, m.y, d / pinch.dist);
+    }
+    pinch.dist = d;
+  }, true);
+
+  function endPointer(evt) {
+    pointers.delete(evt.pointerId);
+    if (pointers.size < 2 && pinch) { pinch = null; pinchJustEnded = true; }
+  }
+  svg.addEventListener("pointerup", endPointer, true);
+  svg.addEventListener("pointercancel", endPointer, true);
+
   function wireNode(n) {
     var moved = false, sx = 0, sy = 0;
     n.el.addEventListener("pointerdown", function (evt) {
@@ -481,6 +541,7 @@
       try { n.el.setPointerCapture(evt.pointerId); } catch (err) { /* synthetic pointers */ }
       reheat(0.25);
       function move(e2) {
+        if (pinch) return; /* a second finger turns this into a zoom, not a drag */
         var q = worldPoint(e2);
         if (Math.abs(q.x - sx - n.x) > 2 || Math.abs(q.y - sy - n.y) > 2) moved = true;
         n.x = q.x - sx; n.y = q.y - sy;
@@ -491,7 +552,7 @@
         n.el.classList.remove("dragging");
         n.el.removeEventListener("pointermove", move);
         n.el.removeEventListener("pointerup", up);
-        if (!moved) { n.pinned = false; select(n.id); }
+        if (!moved && !pinchJustEnded) { n.pinned = false; select(n.id); }
         else { n.el.classList.add("is-pinned"); renderInspector(); }
       }
       n.el.addEventListener("pointermove", move);
@@ -519,6 +580,7 @@
     svg.classList.add("panning");
     svg.setPointerCapture(evt.pointerId);
     function move(e2) {
+      if (pinch) return; /* a second finger turns this into a zoom, not a pan */
       var b = svg.getBoundingClientRect();
       var scale = W / b.width;
       if (Math.abs(e2.clientX - ox) + Math.abs(e2.clientY - oy) > 3) moved = true;
@@ -531,7 +593,7 @@
       svg.classList.remove("panning");
       svg.removeEventListener("pointermove", move);
       svg.removeEventListener("pointerup", up);
-      if (!moved) select(null);
+      if (!moved && !pinchJustEnded) select(null); /* lifting a pinch is not a tap */
     }
     svg.addEventListener("pointermove", move);
     svg.addEventListener("pointerup", up);
