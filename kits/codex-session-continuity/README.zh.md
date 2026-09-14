@@ -1,6 +1,6 @@
 # Codex 会话连续性套件
 
-[English](./README.md) · [为什么这样设计](../../docs/assistant-memory-workflow.zh.md#检索之前先对齐时间和对话状态)
+[English](./README.md) · [网页版](https://wangylhs.github.io/project-pinecone/docs/session-continuity.zh.html) · [为什么这样设计](../../docs/assistant-memory-workflow.zh.md#检索之前先对齐时间和对话状态)
 
 Agent 没有时间感，新 Session 也总是从零开始。离开一夜回来说一句"早上好"，它会当作一分钟前的延续来回答。开一个新 Session，刚才的梗、情绪、说好明天继续的事，都要重新讲一遍才接得上。
 

@@ -1,6 +1,6 @@
 # Codex Session Continuity Kit
 
-[中文](./README.zh.md) · [Why it is built this way](../../docs/assistant-memory-workflow.en.md#before-retrieval-re-anchor-time-and-warm-context)
+[中文](./README.zh.md) · [Web page](https://wangylhs.github.io/project-pinecone/docs/session-continuity.en.html) · [Why it is built this way](../../docs/assistant-memory-workflow.en.md#before-retrieval-re-anchor-time-and-warm-context)
 
 An agent has no sense of elapsed time, and a new Session starts cold. Come back after a night away, say "good morning", and the agent answers as if a minute had passed. Open a new Session, and the running joke, the mood, and the thing you both meant to finish tomorrow are gone until you retell them.
 

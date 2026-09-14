@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Two explicit Codex commands that give an agent a sense of elapsed time and a warm start in a new Session.">
+  <title>Project Pinecone · Session Continuity Kit</title>
+  <link rel="stylesheet" href="architecture.css">
+  <style>
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+    .button { display: inline-block; padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font-size: .9rem; text-decoration: none; }
+    .button.primary { border-color: var(--accent); background: var(--accent); color: #fff; }
+    .code { margin: 0; padding: 18px 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; font-size: .8rem; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .code .dim { color: var(--muted); }
+    .code .key { color: var(--accent); }
+    .timeline { margin-bottom: 22px; }
+    .timeline .cold-step { min-height: 0; }
+    .timeline .cold-step code { color: var(--accent); }
+    .card ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: .88rem; }
+    .card ul li + li { margin-top: 6px; }
+    .card code, .section-head code { color: var(--text); }
+    .note { margin: 18px 0 12px; color: var(--muted); max-width: 900px; }
+    #states table { min-width: 0; }
+    #states td:first-child { width: 42%; overflow-wrap: anywhere; }
+    @media (max-width: 560px) {
+      #states thead { display: none; }
+      #states tr { display: block; padding: 12px 0; border-bottom: 1px solid var(--line); }
+      #states td, #states td:first-child { display: block; width: auto; padding: 2px 0; border: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Page navigation">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">P</div>
+        <div><strong>Project Pinecone</strong><span>Session continuity kit</span></div>
+      </div>
+      <div class="language" aria-label="Language">
+        <a href="session-continuity.en.html" aria-current="page">English</a>
+        <a href="session-continuity.zh.html" lang="zh-CN">中文</a>
+      </div>
+      <nav>
+        <a href="#overview">01 · Overview</a>
+        <a href="#layers">02 · Two layers</a>
+        <a href="#sees">03 · What the agent sees</a>
+        <a href="#install">04 · Install</a>
+        <a href="#states">05 · Every state is explicit</a>
+        <a href="#design">06 · How it is built</a>
+        <a href="#limits">07 · Limits</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="hero" id="overview">
+        <div class="eyebrow">Codex kit · two explicit commands</div>
+        <h1>Know how long you were away. Pick up where you left off.</h1>
+        <p>An agent cannot tell a minute from a night, and a new Session starts cold. Come back after a night away, say “good morning”, and it answers as if a minute had passed. Open a new Session, and the running joke, the mood, and the thing you meant to finish are gone until you retell them.</p>
+        <div class="tagline mono">$time-sync · $handoff</div>
+
+        <div class="principles" aria-label="Properties">
+          <div class="principle"><strong>Measured</strong><span>The host measures elapsed time. The agent never guesses it.</span></div>
+          <div class="principle"><strong>Handed off</strong><span>Mood, open matters, and shared phrases reach the next Session.</span></div>
+          <div class="principle"><strong>Explicit</strong><span>Nothing runs until you type a command.</span></div>
+          <div class="principle"><strong>Small</strong><span>Two hooks, two skills, standard-library Python, tests.</span></div>
+        </div>
+
+        <div class="actions">
+          <a class="button primary" href="https://github.com/wangylhs/project-pinecone/tree/main/kits/codex-session-continuity">Get the files on GitHub</a>
+          <a class="button" href="#install">Install in three steps</a>
+        </div>
+      </header>
+
+      <section id="layers">
+        <div class="section-head">
+          <h2>Two layers that cover each other</h2>
+          <p>Inside one Session, the gap comes from the transcript. A brand-new Session has no previous message, so <code>$time-sync</code> carries the last handoff across instead, together with how long ago it was written.</p>
+        </div>
+        <div class="cold-grid timeline" role="img" aria-label="An evening Session writes a handoff, nothing runs overnight, and the morning Session reads it back with the measured gap">
+          <div class="cold-step"><strong>Evening · Session A</strong><span>You send <code>$handoff good night</code>. The agent writes a small packet.</span></div>
+          <div class="cold-arrow">→</div>
+          <div class="cold-step"><strong>Overnight</strong><span>Nothing runs. One overwritten file waits outside Git.</span></div>
+          <div class="cold-arrow">→</div>
+          <div class="cold-step"><strong>Morning · Session B</strong><span>You send <code>$time-sync good morning</code>. The agent gets the gap and the packet.</span></div>
+        </div>
+        <div class="layer-grid">
+          <article class="card"><span class="tag">TIME · MEASURED</span><h3>$time-sync</h3><p>Local time and the gap since your previous message, measured from transcript timestamps. “Good morning” after ten hours reads as a return, not a continuation. If measurement fails, the agent says so instead of estimating.</p></article>
+          <article class="card"><span class="tag">STATE · HANDED OFF</span><h3>$handoff</h3><p>Before you leave, the agent writes the mood, up to two open matters, up to three shared phrases, and the last topic. The next <code>$time-sync</code> in a new Session brings it back once.</p></article>
+        </div>
+      </section>
+
+      <section id="sees">
+        <div class="section-head">
+          <h2>What the agent sees</h2>
+          <p>The first <code>$time-sync</code> in a new Session, with a handoff left the night before. Every example here is fictional.</p>
+        </div>
+<pre class="code"><span class="key">TemporalSync</span> error=no preceding user message. Do not infer elapsed time.
+<span class="key">SessionHandoff</span> source_session=0a0a0a0a-0000-4000-8000-000000000001; written_at=2030-01-02T22:41:07+01:00; age=9h 12m. <span class="dim">Host-read packet from a previous Session's $handoff: recorded observations, not verified current state.</span>
+## Mood
+Tired after the ridge survey, but in good spirits
+
+## Unfinished
+- Recalibrate the snow gauge before the next storm
+
+## Phrases
+- velvet teapot protocol — the crew's name for boiling water twice at altitude
+
+## Last topic
+Where to pitch camp two; ended with good night</pre>
+        <p class="note">The skill tells the agent to treat this as dated observations, pick things up where they fit, and not recite the packet. Later in the same Session, <code>$time-sync</code> costs two short lines.</p>
+      </section>
+
+      <section id="install">
+        <div class="section-head">
+          <h2>Install in three steps</h2>
+          <p>Copy two folders, trust two hooks, open a new Session.</p>
+        </div>
+        <div class="revival-grid">
+          <article class="card revival-card"><div class="number">1</div><h3>Copy</h3><p>Copy <code>.codex/</code> and <code>.agents/</code> from the kit into the root of your Git repository. If you already have <code>.codex/hooks.json</code>, merge the two <code>UserPromptSubmit</code> handlers into it.</p></article>
+          <article class="card revival-card"><div class="number">2</div><h3>Trust the hooks</h3><p>Codex does not run a new or changed hook until you review it, and it fails silently. Open the Codex CLI in the repository and accept <em>Hooks need review</em>, or run <code>/hooks</code>. Repeat after any edit to <code>hooks.json</code>.</p></article>
+          <article class="card revival-card"><div class="number">3</div><h3>Open a new Session</h3><p>Then use it: <code>$handoff good night</code> when you leave, <code>$time-sync good morning</code> when you come back.</p></article>
+        </div>
+        <p class="note">The packet lives in <code>.session-continuity/handoff.md</code>. That folder writes its own <code>.gitignore</code> on first use, so mood notes cannot be committed by accident. Set <code>SESSION_HANDOFF_PATH</code> to move it. Run the tests from the kit folder:</p>
+<pre class="code">python3 -m unittest discover -s tests</pre>
+      </section>
+
+      <section id="states">
+        <div class="section-head">
+          <h2>Every state is explicit</h2>
+          <p>Silence means a hook did not run, so every other outcome says what happened.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Line</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td>TemporalSync gap=…</td><td>Measured gap since your previous message in this Session</td></tr>
+              <tr><td>TemporalSync error=no preceding user message</td><td>A new Session: use the handoff's age instead</td></tr>
+              <tr><td>SessionHandoff age=…</td><td>The packet follows</td></tr>
+              <tr><td>SessionHandoff later_activity=…</td><td>Other Codex conversations in this repository ran after the handoff was written</td></tr>
+              <tr><td>SessionHandoff long_gap</td><td>Older than 7 days: carry open matters, not the recorded tone</td></tr>
+              <tr><td>SessionHandoff omitted</td><td>Written in this Session, or already provided earlier in it</td></tr>
+              <tr><td>SessionHandoff unavailable / error</td><td>Nothing usable, and the agent must not guess</td></tr>
+              <tr><td>HandoffTarget source_session=…</td><td>The id the agent writes the packet under</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="design">
+        <div class="section-head">
+          <h2>How it is built</h2>
+          <p>The decisions worth borrowing even if you never use Codex.</p>
+        </div>
+        <div class="layer-grid">
+          <article class="card"><span class="tag">MEASURE</span><h3>The host measures, the agent never infers</h3><p>Elapsed time comes from transcript timestamps. A failed measurement is reported, not estimated.</p></article>
+          <article class="card"><span class="tag">SKIP</span><h3>Ignore what the host injected</h3><p>Finding your previous message skips instructions, environment context, and skill payloads the client adds itself. Otherwise the first turn always measures zero.</p></article>
+          <article class="card"><span class="tag">SPLIT</span><h3>The model writes, the host identifies</h3><p>Only the model can summarize; only the host knows the Session id. One write command validates the template before it overwrites, so a bad packet never replaces a good one.</p></article>
+          <article class="card"><span class="tag">ONE COPY</span><h3>Warm context, not a second memory</h3><p>One overwritten file, outside Git and any index. Mood is an observation, not an instruction; after a long gap, the old tone is dropped.</p></article>
+          <article class="card"><span class="tag">FILTER</span><h3>The previous file is not the previous conversation</h3><p>Codex's session folder mixes other repositories, subagents, and reviewer threads. Only your threads in this repository count, and the kit reports later activity rather than claiming there was none.</p></article>
+          <article class="card"><span class="tag">BUDGET</span><h3>Once per Session, within a cap</h3><p>At most 800 characters of packet and 160 per line, injected on the first <code>$time-sync</code> only. The worst case fits the hook limit even counted in UTF-8 bytes.</p></article>
+        </div>
+        <div class="callout"><div aria-hidden="true">◐</div><p><strong>The failure tests cannot reach:</strong> every script passes when run by hand while Codex is not running it, because a changed hook is untrusted. That is why the install has a trust step, and why every other outcome states itself.</p></div>
+      </section>
+
+      <section id="limits">
+        <div class="section-head">
+          <h2>Limits</h2>
+          <p>What this kit does not claim.</p>
+        </div>
+        <article class="card">
+          <ul>
+            <li>Codex-specific: it relies on the hook event's <code>transcript_path</code>, rollout filenames ending in the Session id, and the <code>cwd</code> and <code>thread_source</code> fields of <code>session_meta</code>. Built against Codex 0.154 (CLI and Desktop) on macOS; other versions and platforms are untested.</li>
+            <li>The repository must be a Git repository, because the hooks resolve paths with <code>git rev-parse</code>.</li>
+            <li><code>later_activity</code> compares file modification times, so unrelated work in the same repository can trigger it. It says the handoff <em>may</em> not cover it, nothing stronger.</li>
+            <li>A handoff holds one Session's warm context. It is not durable memory, and it makes no claim about what is true now.</li>
+            <li>The mechanism carries over to other agent hosts; the transcript parsing and hook contract do not. It has not been ported.</li>
+          </ul>
+        </article>
+        <div class="actions">
+          <a class="button primary" href="https://github.com/wangylhs/project-pinecone/tree/main/kits/codex-session-continuity">Get the files on GitHub</a>
+          <a class="button" href="memory-system-architecture.en.html#continuity">See it in the architecture</a>
+        </div>
+      </section>
+
+      <footer class="footer">Project Pinecone · Generalized from a private local system without carrying over its memories, identities, paths, or live data. <a href="../index.html">Home</a> · <a href="memory-system-architecture.en.html">Architecture</a></footer>
+    </main>
+  </div>
+</body>
+</html>

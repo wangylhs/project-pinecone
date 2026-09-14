@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="两个手动触发的 Codex 命令：让 agent 知道你离开了多久，并把上一个 Session 的状态带进新 Session。">
+  <title>Project Pinecone · 会话连续性套件</title>
+  <link rel="stylesheet" href="architecture.css">
+  <style>
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+    .button { display: inline-block; padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font-size: .9rem; text-decoration: none; }
+    .button.primary { border-color: var(--accent); background: var(--accent); color: #fff; }
+    .code { margin: 0; padding: 18px 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; font-size: .8rem; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .code .dim { color: var(--muted); }
+    .code .key { color: var(--accent); }
+    .timeline { margin-bottom: 22px; }
+    .timeline .cold-step { min-height: 0; }
+    .timeline .cold-step code { color: var(--accent); }
+    .card ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: .88rem; }
+    .card ul li + li { margin-top: 6px; }
+    .card code, .section-head code { color: var(--text); }
+    .note { margin: 18px 0 12px; color: var(--muted); max-width: 900px; }
+    #states table { min-width: 0; }
+    #states td:first-child { width: 42%; overflow-wrap: anywhere; }
+    @media (max-width: 560px) {
+      #states thead { display: none; }
+      #states tr { display: block; padding: 12px 0; border-bottom: 1px solid var(--line); }
+      #states td, #states td:first-child { display: block; width: auto; padding: 2px 0; border: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="页面导航">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">P</div>
+        <div><strong>Project Pinecone</strong><span>会话连续性套件</span></div>
+      </div>
+      <div class="language" aria-label="语言">
+        <a href="session-continuity.en.html" lang="en">English</a>
+        <a href="session-continuity.zh.html" aria-current="page">中文</a>
+      </div>
+      <nav>
+        <a href="#overview">01 · 总览</a>
+        <a href="#layers">02 · 两层机制</a>
+        <a href="#sees">03 · Agent 看到什么</a>
+        <a href="#install">04 · 安装</a>
+        <a href="#states">05 · 每种状态都说明</a>
+        <a href="#design">06 · 设计要点</a>
+        <a href="#limits">07 · 局限</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="hero" id="overview">
+        <div class="eyebrow">Codex 套件 · 两个手动命令</div>
+        <h1>知道你离开了多久，从上次停下的地方接着聊。</h1>
+        <p>Agent 分不清一分钟和一整夜，新 Session 也总是从零开始。离开一夜回来说一句“早上好”，它会当作一分钟前的延续来回答。开一个新 Session，刚才的梗、情绪、说好要继续的事，都要重新讲一遍才接得上。</p>
+        <div class="tagline mono">$time-sync · $handoff</div>
+
+        <div class="principles" aria-label="特性">
+          <div class="principle"><strong>测量</strong><span>时间差由宿主测量，agent 从不猜。</span></div>
+          <div class="principle"><strong>交接</strong><span>情绪、未完成的事和共同说法带进下一个 Session。</span></div>
+          <div class="principle"><strong>手动</strong><span>不输入命令，就什么都不会运行。</span></div>
+          <div class="principle"><strong>小</strong><span>两个 hook、两个 skill、标准库 Python，外加测试。</span></div>
+        </div>
+
+        <div class="actions">
+          <a class="button primary" href="https://github.com/wangylhs/project-pinecone/tree/main/kits/codex-session-continuity">在 GitHub 获取文件</a>
+          <a class="button" href="#install">三步安装</a>
+        </div>
+      </header>
+
+      <section id="layers">
+        <div class="section-head">
+          <h2>互相补位的两层</h2>
+          <p>同一个 Session 里，时间差从 transcript 算；全新的 Session 没有上一条消息，<code>$time-sync</code> 就改为带上最近一次 handoff，并附上它写于多久之前。</p>
+        </div>
+        <div class="cold-grid timeline" role="img" aria-label="晚上的 Session 写下 handoff，夜里什么都不运行，早上的 Session 连同测出的时间差把它读回来">
+          <div class="cold-step"><strong>晚上 · Session A</strong><span>你发 <code>$handoff 晚安</code>，agent 写下一份小包。</span></div>
+          <div class="cold-arrow">→</div>
+          <div class="cold-step"><strong>夜里</strong><span>什么都不运行。一份每次覆盖的文件，放在 Git 之外。</span></div>
+          <div class="cold-arrow">→</div>
+          <div class="cold-step"><strong>早上 · Session B</strong><span>你发 <code>$time-sync 早上好</code>，agent 拿到时间差和小包。</span></div>
+        </div>
+        <div class="layer-grid">
+          <article class="card"><span class="tag">时间 · 测量</span><h3>$time-sync</h3><p>本地时间，以及距离你上一条消息的时间差，根据 transcript 时间戳测量。隔了十个小时说“早上好”，会被理解为回来了，而不是接着刚才。测量失败时 agent 直接说明，不估算。</p></article>
+          <article class="card"><span class="tag">状态 · 交接</span><h3>$handoff</h3><p>离开前，agent 写下情绪、最多两件未完成的事、最多三个共同说法和最后的话题。新 Session 里的下一次 <code>$time-sync</code> 会把它带回来一次。</p></article>
+        </div>
+      </section>
+
+      <section id="sees">
+        <div class="section-head">
+          <h2>Agent 看到什么</h2>
+          <p>新 Session 里的第一次 <code>$time-sync</code>，前一晚留过 handoff。这里的例子全部是虚构的。</p>
+        </div>
+<pre class="code"><span class="key">TemporalSync</span> error=no preceding user message. Do not infer elapsed time.
+<span class="key">SessionHandoff</span> source_session=0a0a0a0a-0000-4000-8000-000000000001; written_at=2030-01-02T22:41:07+01:00; age=9h 12m. <span class="dim">Host-read packet from a previous Session's $handoff: recorded observations, not verified current state.</span>
+## Mood
+Tired after the ridge survey, but in good spirits
+
+## Unfinished
+- Recalibrate the snow gauge before the next storm
+
+## Phrases
+- velvet teapot protocol — the crew's name for boiling water twice at altitude
+
+## Last topic
+Where to pitch camp two; ended with good night</pre>
+        <p class="note">Skill 会要求 agent 把这些当作带日期的观察，在合适的时候自然接上，不要复述整份内容。同一个 Session 里之后再发 <code>$time-sync</code>，只多两行。</p>
+      </section>
+
+      <section id="install">
+        <div class="section-head">
+          <h2>三步安装</h2>
+          <p>复制两个目录，信任两个 hook，开一个新 Session。</p>
+        </div>
+        <div class="revival-grid">
+          <article class="card revival-card"><div class="number">1</div><h3>复制</h3><p>把套件里的 <code>.codex/</code> 和 <code>.agents/</code> 复制到你的 Git 仓库根目录。如果已经有 <code>.codex/hooks.json</code>，把两个 <code>UserPromptSubmit</code> handler 合并进去。</p></article>
+          <article class="card revival-card"><div class="number">2</div><h3>信任 hook</h3><p>Codex 不会运行新增或被修改过的 hook，直到你审核通过，而且不会报错。在仓库里打开 Codex CLI，接受 <em>Hooks need review</em>，或者运行 <code>/hooks</code>。以后每次改 <code>hooks.json</code> 都要重来一遍。</p></article>
+          <article class="card revival-card"><div class="number">3</div><h3>开新 Session</h3><p>然后就能用了：离开时发 <code>$handoff 晚安</code>，回来时发 <code>$time-sync 早上好</code>。</p></article>
+        </div>
+        <p class="note">小包存在 <code>.session-continuity/handoff.md</code>。这个目录第一次写入时会自动生成 <code>.gitignore</code>，情绪笔记不会被意外提交。设置 <code>SESSION_HANDOFF_PATH</code> 可以换位置。在套件目录下运行测试：</p>
+<pre class="code">python3 -m unittest discover -s tests</pre>
+      </section>
+
+      <section id="states">
+        <div class="section-head">
+          <h2>每种状态都显式说明</h2>
+          <p>一片空白只意味着 hook 没有运行，所以其他每种结果都会说清楚发生了什么。</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>注入内容</th><th>含义</th></tr></thead>
+            <tbody>
+              <tr><td>TemporalSync gap=…</td><td>距离本 Session 上一条消息测出的时间差</td></tr>
+              <tr><td>TemporalSync error=no preceding user message</td><td>新 Session：改用 handoff 的 age</td></tr>
+              <tr><td>SessionHandoff age=…</td><td>后面跟着小包内容</td></tr>
+              <tr><td>SessionHandoff later_activity=…</td><td>handoff 写完之后，这个仓库里还有其他 Codex 对话</td></tr>
+              <tr><td>SessionHandoff long_gap</td><td>超过 7 天：跟进未完成的事，不接上次的语气</td></tr>
+              <tr><td>SessionHandoff omitted</td><td>小包就是在本 Session 写的，或者本 Session 已经注入过</td></tr>
+              <tr><td>SessionHandoff unavailable / error</td><td>没有可用的内容，agent 不能猜</td></tr>
+              <tr><td>HandoffTarget source_session=…</td><td>agent 写入小包时使用的 id</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="design">
+        <div class="section-head">
+          <h2>设计要点</h2>
+          <p>就算不用 Codex，这些决定也值得借鉴。</p>
+        </div>
+        <div class="layer-grid">
+          <article class="card"><span class="tag">测量</span><h3>宿主测量，agent 不推断</h3><p>时间差来自 transcript 时间戳。测量失败就报告失败，不估算。</p></article>
+          <article class="card"><span class="tag">跳过</span><h3>忽略宿主自己注入的内容</h3><p>找你的上一条消息时，跳过客户端自己加入的指令、环境信息和 skill 内容。否则第一轮永远测出 0。</p></article>
+          <article class="card"><span class="tag">分工</span><h3>模型负责写，宿主负责身份</h3><p>只有模型能做总结，只有宿主知道 Session id。唯一的写入命令先校验模板再覆盖，坏的小包永远替换不掉好的那份。</p></article>
+          <article class="card"><span class="tag">一份</span><h3>热上下文，不是第二套记忆</h3><p>只有一份、每次覆盖，不进 Git，也不进任何索引。情绪是观察而不是指令；隔得太久，就不接上次的语气。</p></article>
+          <article class="card"><span class="tag">过滤</span><h3>前一个文件不等于上一次对话</h3><p>Codex 的 session 目录里混着其他仓库、subagent 和审核线程。只统计你在本仓库里的线程，并报告“之后还有活动”，而不是断言“没有更新的对话”。</p></article>
+          <article class="card"><span class="tag">预算</span><h3>每个 Session 一次，有上限</h3><p>小包最多 800 字符、每行 160 字符，只在第一次 <code>$time-sync</code> 注入。最坏情况按 UTF-8 字节计算也在 hook 上限以内。</p></article>
+        </div>
+        <div class="callout"><div aria-hidden="true">◐</div><p><strong>测试覆盖不到的故障：</strong>hook 定义一改就不再被信任，Codex 不运行它，但每个脚本手动跑都是通过的。所以安装步骤里专门有信任这一步，其他每种结果也都会显式说明。</p></div>
+      </section>
+
+      <section id="limits">
+        <div class="section-head">
+          <h2>局限</h2>
+          <p>这个套件不宣称的事情。</p>
+        </div>
+        <article class="card">
+          <ul>
+            <li>依赖 Codex 的具体实现：hook 事件里的 <code>transcript_path</code>、以 Session id 结尾的 rollout 文件名，以及 <code>session_meta</code> 里的 <code>cwd</code> 和 <code>thread_source</code> 字段。在 macOS 上基于 Codex 0.154（CLI 与 Desktop）开发；其他版本和平台未测试。</li>
+            <li>必须是 Git 仓库，因为 hook 用 <code>git rev-parse</code> 定位路径。</li>
+            <li><code>later_activity</code> 比较的是文件修改时间，同一仓库里无关的工作也可能触发。它只说 handoff <em>可能</em>没覆盖到，不会说得更重。</li>
+            <li>Handoff 只装一个 Session 的热上下文，不是持久记忆，也不代表任何事情现在仍然成立。</li>
+            <li>这套机制可以迁移到其他 agent 宿主，但 transcript 解析和 hook 约定不能照搬。目前还没有移植。</li>
+          </ul>
+        </article>
+        <div class="actions">
+          <a class="button primary" href="https://github.com/wangylhs/project-pinecone/tree/main/kits/codex-session-continuity">在 GitHub 获取文件</a>
+          <a class="button" href="memory-system-architecture.zh.html#continuity">在架构图里查看</a>
+        </div>
+      </section>
+
+      <footer class="footer">Project Pinecone · 从真实本地系统中提炼方法，但不携带它的记忆、身份、路径或 live data。<a href="../index.html">首页</a> · <a href="memory-system-architecture.zh.html">系统架构</a></footer>
+    </main>
+  </div>
+</body>
+</html>

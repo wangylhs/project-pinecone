@@ -13,7 +13,7 @@ Project Pinecone is a small, provenance-first home for experiments around durabl
 | Visual architecture | [memory-system-architecture.en.html](./docs/memory-system-architecture.en.html) | [memory-system-architecture.zh.html](./docs/memory-system-architecture.zh.html) |
 | Assistant workflow | [assistant-memory-workflow.en.md](./docs/assistant-memory-workflow.en.md) | [assistant-memory-workflow.zh.md](./docs/assistant-memory-workflow.zh.md) |
 | Interactive graph | [memory-graph-explorer.html](./docs/memory-graph-explorer.html) | 同一页面，内置 EN/中文 切换 |
-| Session continuity kit | [README.md](./kits/codex-session-continuity/README.md) | [README.zh.md](./kits/codex-session-continuity/README.zh.md) |
+| Session continuity kit | [session-continuity.en.html](./docs/session-continuity.en.html) | [session-continuity.zh.html](./docs/session-continuity.zh.html) |
 
 The architecture covers:
 
@@ -52,7 +52,7 @@ The scenario dramatizes the candidate evaluations in [DRAFT.md](./DRAFT.md): sim
 
 ## Session Continuity Kit
 
-[`kits/codex-session-continuity`](./kits/codex-session-continuity/README.md) is the one piece meant to be copied into a workspace as is. An agent cannot tell a minute from a night, and a new Session starts cold. Two explicit Codex commands fix that:
+[`kits/codex-session-continuity`](./kits/codex-session-continuity/README.md) is the one piece meant to be copied into a workspace as is; [`docs/session-continuity.en.html`](./docs/session-continuity.en.html) is its page. An agent cannot tell a minute from a night, and a new Session starts cold. Two explicit Codex commands fix that:
 
 - `$time-sync` gives the agent the local time and the host-measured gap since your previous message, so "good morning" after a night away reads as a return.
 - `$handoff`, sent before you leave, has the agent write a small packet — mood, open matters, shared phrases, last topic. The next `$time-sync` in a new Session carries it across, together with how long ago it was written.
