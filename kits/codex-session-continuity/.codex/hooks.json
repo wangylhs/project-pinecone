@@ -1,0 +1,23 @@
+{
+  "description": "User-triggered time sync and session handoff for conversation continuity.",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/time_sync.py\"",
+            "timeout": 3,
+            "additionalContextLimit": 4000
+          },
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/session_handoff.py\"",
+            "timeout": 3,
+            "additionalContextLimit": 200
+          }
+        ]
+      }
+    ]
+  }
+}

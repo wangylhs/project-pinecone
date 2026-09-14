@@ -13,9 +13,11 @@ Project Pinecone is a small, provenance-first home for experiments around durabl
 | Visual architecture | [memory-system-architecture.en.html](./docs/memory-system-architecture.en.html) | [memory-system-architecture.zh.html](./docs/memory-system-architecture.zh.html) |
 | Assistant workflow | [assistant-memory-workflow.en.md](./docs/assistant-memory-workflow.en.md) | [assistant-memory-workflow.zh.md](./docs/assistant-memory-workflow.zh.md) |
 | Interactive graph | [memory-graph-explorer.html](./docs/memory-graph-explorer.html) | 同一页面，内置 EN/中文 切换 |
+| Session continuity kit | [README.md](./kits/codex-session-continuity/README.md) | [README.zh.md](./kits/codex-session-continuity/README.zh.md) |
 
 The architecture covers:
 
+- session continuity before retrieval: a host-measured time sync and a validated, overwritten handoff packet;
 - durable sources versus rebuildable retrieval data;
 - `RETRIEVE / ASK / SKIP` and bounded context;
 - time-aware current state without fixed TTLs, with injectable evaluation dates;
@@ -48,13 +50,22 @@ It is deliberately unglamorous underneath: one SVG scene, a small force-directed
 
 The scenario dramatizes the candidate evaluations in [DRAFT.md](./DRAFT.md): similar wording in a different context, a time-aware state without a TTL, an alias that must not capture every mention, and a changed choice whose rationale survives.
 
+## Session Continuity Kit
+
+[`kits/codex-session-continuity`](./kits/codex-session-continuity/README.md) is the one piece meant to be copied into a workspace as is. An agent cannot tell a minute from a night, and a new Session starts cold. Two explicit Codex commands fix that:
+
+- `$time-sync` gives the agent the local time and the host-measured gap since your previous message, so "good morning" after a night away reads as a return.
+- `$handoff`, sent before you leave, has the agent write a small packet — mood, open matters, shared phrases, last topic. The next `$time-sync` in a new Session carries it across, together with how long ago it was written.
+
+Two hooks, two skills, standard-library Python, and tests. The part worth reading even if you never use Codex is why it is built the way it is: the host measures time and the agent never infers it, one overwritten packet stays out of Git and the index, and every outcome states itself so that silence can only mean the hook did not run.
+
 ## Privacy boundary
 
 These are generalized, sanitized reference materials. They intentionally omit private conversations, identities, account or family details, local usernames and absolute paths, live archive counts, and copies of any personal-memory workspace.
 
 ## Status
 
-Seed stage. Documentation plus one interactive demo; no retrieval engine is bundled here. The bilingual guides distinguish checked implementation mechanisms from proposed experiments and unresolved boundaries. See the [synthetic boundary cases](./DRAFT.md#third-candidate-evaluation-strict-data-permissive-input) for concrete examples.
+Seed stage. Documentation, one interactive demo, and one small Codex kit; no retrieval engine is bundled here. The bilingual guides distinguish checked implementation mechanisms from proposed experiments and unresolved boundaries. See the [synthetic boundary cases](./DRAFT.md#third-candidate-evaluation-strict-data-permissive-input) for concrete examples.
 
 Keep it small, inspectable, privacy-aware, and easy to rebuild.
 

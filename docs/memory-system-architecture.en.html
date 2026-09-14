@@ -24,12 +24,13 @@
         <a href="#revival">03 · Cold revival</a>
         <a href="#layers">04 · Ownership</a>
         <a href="#time">05 · Temporal state</a>
-        <a href="#workflow">06 · Escalation</a>
-        <a href="#evaluation">07 · Evaluation</a>
-        <a href="#layout">08 · Reference layout</a>
-        <a href="#fidelity">09 · Fidelity</a>
-        <a href="#contracts">10 · Retrieval contracts</a>
-        <a href="#boundaries">11 · Operational boundaries</a>
+        <a href="#continuity">06 · Session continuity</a>
+        <a href="#workflow">07 · Escalation</a>
+        <a href="#evaluation">08 · Evaluation</a>
+        <a href="#layout">09 · Reference layout</a>
+        <a href="#fidelity">10 · Fidelity</a>
+        <a href="#contracts">11 · Retrieval contracts</a>
+        <a href="#boundaries">12 · Operational boundaries</a>
       </nav>
     </aside>
 
@@ -140,6 +141,26 @@
         <div class="callout"><div aria-hidden="true">◷</div><p><strong>Testable rule:</strong> inject <span class="mono">as_of</span>. Keep base ranking stable and add a temporal label only when the checkpoint passed without a later confirmation.</p></div>
       </section>
 
+      <section id="continuity">
+        <div class="section-head">
+          <h2>The assistant's own clock, and a warm start</h2>
+          <p>Stored facts carry time as evidence. The assistant carries none: it cannot tell a minute from a night, and a new Session starts cold. Two small, user-triggered layers re-anchor it before any retrieval.</p>
+        </div>
+        <div class="layer-grid">
+          <article class="card"><span class="tag">TIME · MEASURED</span><h3>Time sync</h3><p>Local time and the gap since the previous user message, measured by the host from transcript timestamps. Host-injected user-role items are skipped, or the first turn measures zero. When measurement fails, the assistant says so and never estimates.</p></article>
+          <article class="card"><span class="tag">STATE · HANDED OFF</span><h3>Session handoff</h3><p>Before leaving, the model writes the mood, up to two open matters, up to three shared phrases, and the last topic. The host supplies the Session id, and one validated command overwrites a single packet.</p></article>
+          <article class="card"><span class="tag">COMPOSED</span><h3>Each covers the other's blind spot</h3><p>Inside a Session, the gap comes from the transcript. A new Session has no previous message, so the handoff's write time supplies the gap across Sessions. The packet is injected once per Session.</p></article>
+          <article class="card"><span class="tag">BOUNDED</span><h3>Warm context, not a second archive</h3><p>One overwritten copy, outside version control and the retrieval index. Mood is recorded as an observation, not an instruction; after seven days the assistant carries open matters but not tone.</p></article>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Situation</th><th>Injected</th><th>Expected behavior</th></tr></thead><tbody>
+          <tr><td>Back in the same Session after a night</td><td>TemporalSync gap=10h 4m</td><td>Reads "good morning" as a return, not a continuation</td></tr>
+          <tr><td>First message of a new Session</td><td>No preceding message; handoff age and packet</td><td>Picks up an open matter or shared phrase where it fits, without reciting the packet</td></tr>
+          <tr><td>Other conversations ran after the handoff</td><td>later_activity</td><td>Does not treat the packet as the latest conversation</td></tr>
+          <tr><td>No packet, or an invalid one</td><td>unavailable / error</td><td>Carries nothing and does not guess</td></tr>
+        </tbody></table></div>
+        <div class="callout"><div aria-hidden="true">◐</div><p><strong>Silence must mean broken:</strong> every other outcome is stated explicitly. A host may stop running a hook whose definition changed until someone re-trusts it, and the only symptom is missing context. Copy the <a href="../kits/codex-session-continuity/README.md">Codex kit</a>.</p></div>
+      </section>
+
       <section id="workflow">
         <div class="section-head">
           <h2>Evidence escalation workflow</h2>
@@ -232,7 +253,7 @@
       <section id="boundaries">
         <div class="section-head"><h2>Make the remaining boundaries visible</h2><p>A reference pattern should distinguish working mechanisms from open experiments.</p></div>
         <div class="layer-grid">
-          <article class="card"><span class="tag">IMPLEMENTED PATTERNS</span><h3>Observable, limited guarantees</h3><p>Build-time label checks, warning-only hints, direct-successor attachment, whole-label fidelity matching, writer-enforced modes, rule-based control-plane exclusion, contiguous-phrase ranking, and expiring self-explaining traces have implementation counterparts. Pinecone itself publishes documentation, not an engine.</p></article>
+          <article class="card"><span class="tag">IMPLEMENTED PATTERNS</span><h3>Observable, limited guarantees</h3><p>Build-time label checks, warning-only hints, direct-successor attachment, whole-label fidelity matching, writer-enforced modes, rule-based control-plane exclusion, contiguous-phrase ranking, and expiring self-explaining traces have implementation counterparts. Session continuity ships as a small Codex kit with tests. Beyond that kit, Pinecone publishes documentation, not an engine.</p></article>
           <article class="card"><span class="tag">WORKING COPY</span><h3>Permissions do not travel in Git</h3><p>Owner-only modes need writer enforcement and checks after checkout or restore. Frozen-input advisories remain visible but do not fail the check or authorize automatic repair. Directory-symlink containment remains a known limitation.</p></article>
           <article class="card"><span class="tag">RECOVERY · MEASURED</span><h3>A backup you have never restored is a guess</h3><p>The trees that exist in only one place are compared against an external copy file by file, and a restore drill has been run. Refresh stays manual, so the honest claim is “verified as of the last check” — which is what the check reports.</p></article>
           <article class="card"><span class="tag">EXPERIMENTS · OPEN</span><h3>Do not turn a proposal into a feature claim</h3><p>Separate challenge runners and calibrated evidence labels remain follow-up work. Retrieval-intent parsing is measured against a ceiling it does not yet meet, and saying so is the point. Temporal checkpoint logic has synthetic coverage, not proof of a live checkpoint.</p></article>

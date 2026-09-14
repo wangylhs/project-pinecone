@@ -12,7 +12,7 @@
 
 ## 实现与实验状态
 
-这份参考描述的是已在一个实际 file-backed 实现中核对过的机制；Pinecone 本身仍是文档，没有打包检索引擎。标签校验、查询 hint 只警告、旧决策附带直接后继、精确 fidelity 匹配、enforced/advisory 权限检查、按规则排除 control-plane、连续短语排序信号、每条 rejection 自带理由、trace 生命周期，以及可移植的 build fixture 都有对应实现。
+这份参考描述的是已在一个实际 file-backed 实现中核对过的机制；Pinecone 本身仍是文档，没有打包检索引擎。唯一可以原样复制进工作区的是会话连续性：宿主测量的 time sync，加上一份带校验、每次覆盖的 handoff 小包，以一个带测试的小型 Codex 套件发布。标签校验、查询 hint 只警告、旧决策附带直接后继、精确 fidelity 匹配、enforced/advisory 权限检查、按规则排除 control-plane、连续短语排序信号、每条 rejection 自带理由、trace 生命周期，以及可移植的 build fixture 都有对应实现。
 
 独立 challenge runner 与校准后的弱证据标签仍属于设计工作。外部恢复已经从「假设可用」变成「实测」：单副本目录会逐个文件与外部备份比对，并且做过一次恢复演练。但刷新仍是手动的，备份可能过期，而这正是检查要报告的事情。Retrieval intent 解析已经有测量，并对照一个公开声明的上限，目前尚未达标。时间 checkpoint 逻辑有合成覆盖，不等于存在正在运行的真实检查点。下文描述参考工作流，不宣称所有保护措施都已自动化。
 
@@ -33,6 +33,7 @@
 | 层 | 负责 | 不负责 |
 | --- | --- | --- |
 | 当前交互 | 当前请求与 working state | 跨 Session 历史 |
+| Session handoff | 上一个 Session 的情绪、未完成事项和共同说法，直到 curated memory 追上 | 长期事实、已验证的当前状态或 provenance |
 | Operating policy | 当前安全、隐私与 retrieval 行为 | 历史事实本身 |
 | 稳定知识 | 经过复核、低波动、长期有用的事实 | 私人叙事或快速变化状态 |
 | Private current state | 有日期、敏感、仍可行动的当前状态 | 完整时间线 |
@@ -43,6 +44,31 @@
 | Assistant task memory | 可复用任务经验与协作习惯 | 覆盖 archive 的权威性 |
 
 MANIFEST、maintenance log、import report 和 checksum 属于 control plane。它们用于审计和修复，不应该在普通 recall 中与真实记忆内容竞争。
+
+## 检索之前：先对齐时间和对话状态
+
+"先用热上下文"的前提是有热上下文。新 Session 里没有；即使在一个很长的 Session 里，助手也分不清上一条消息是一分钟前还是一整夜之前。检索解决不了这两件事：当前时间不在任何存储的记录里，而上一次对话通常还没进入 curated memory。
+
+两层很小、由用户手动触发的机制补上这个空档：
+
+| 层 | 回答 | 来源 |
+| --- | --- | --- |
+| Time sync | 现在几点，距离上一条消息过了多久？ | 宿主根据 transcript 时间戳测量 |
+| Session handoff | 刚才是什么情绪，什么没做完，有哪些共同的说法？ | 上一个 Session 结束前写下的一份小包 |
+
+两层互相补位。同一个 Session 里，时间差来自 transcript；新 Session 没有上一条消息，就由 handoff 的写入时间提供跨 Session 的时间差。
+
+可以迁移到任何实现的规则：
+
+- 时间差由宿主测量，助手绝不推断。测量失败就直接说。
+- 找上一条用户消息时，跳过宿主自己注入的 user 角色内容——指令、环境信息、skill 内容——否则第一轮永远测出 0。
+- 只有模型能做总结，只有宿主知道 Session 身份。让宿主提供 id，并在覆盖旧小包之前先校验。
+- 只保留一份、每次覆盖，不进版本控制，也不进检索索引。它是短命的热上下文，不是第二套归档。
+- 情绪记成观察，不记成指令。新 Session 里用户当下的状态为准；隔得太久，只跟进未完成的事，不接语气。
+- "前一个 session 文件"不等于"上一次对话"。其他项目、subagent 和审核线程共用同一个目录；报告"之后还有活动"，而不是断言"没有更新的对话"。
+- 每种结果都显式说明——unavailable、omitted、error——这样一片空白只可能意味着机制没有运行。宿主可能在 hook 定义被修改后悄悄停止运行它，直到有人重新信任。
+
+带测试的 Codex 实现见 [`kits/codex-session-continuity`](../kits/codex-session-continuity/README.zh.md)。
 
 ## 第一步：选择 RETRIEVE、ASK 或 SKIP
 

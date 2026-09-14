@@ -1,0 +1,7 @@
+interface:
+  display_name: "Handoff"
+  short_description: "Leave a small handoff packet for the next Session"
+  default_prompt: "Use $handoff to leave a handoff for the next Session before I go."
+
+policy:
+  allow_implicit_invocation: false

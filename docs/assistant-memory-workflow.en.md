@@ -12,7 +12,7 @@ Scope: durable memory, contextual retrieval, and targeted source revival
 
 ## Implementation and experiment status
 
-This reference describes mechanisms checked in a working file-backed implementation; Pinecone itself remains documentation, not a bundled retrieval engine. Label validation, warning-only query hints, direct-successor decision attachment, exact fidelity matching, enforced/advisory permission checks, rule-based control-plane exclusion, contiguous-phrase ranking, self-explaining rejections, trace retention, and a portable build fixture have implementation counterparts.
+This reference describes mechanisms checked in a working file-backed implementation; Pinecone itself remains documentation, not a bundled retrieval engine. The one piece meant to be copied into a workspace as is — session continuity, a host-measured time sync plus a validated, overwritten handoff packet — ships as a small Codex kit with its own tests. Label validation, warning-only query hints, direct-successor decision attachment, exact fidelity matching, enforced/advisory permission checks, rule-based control-plane exclusion, contiguous-phrase ranking, self-explaining rejections, trace retention, and a portable build fixture have implementation counterparts.
 
 Separate challenge runners and calibrated weak-evidence labels remain design work. Independent recovery is now measured rather than assumed: the single-copy trees are compared against an external copy file by file, and a restore drill has been run. Refresh remains manual, so a stale backup is possible and the check is what reports it. Retrieval-intent parsing is instrumented and measured against a declared ceiling that it does not yet meet. Temporal checkpoint logic has synthetic coverage; that is not evidence of an active real-world checkpoint. The sections below describe the reference workflow, not a claim that every safeguard is already automated.
 
@@ -33,6 +33,7 @@ The compact rule is:
 | Layer | Owns | Does not own |
 | --- | --- | --- |
 | Current interaction | The active request and working state | Cross-session history |
+| Session handoff | Mood, open matters, and shared phrases from the last Session, until curated memory catches up | Long-term facts, verified current state, or provenance |
 | Operating policy | Current safety, privacy, and retrieval behavior | Historical facts |
 | Stable knowledge | Reviewed, durable, low-volatility facts | Private narratives or rapidly changing state |
 | Private current state | Dated, sensitive, still-actionable state | Complete chronology |
@@ -43,6 +44,31 @@ The compact rule is:
 | Assistant task memory | Reusable task lessons and collaboration patterns | Authority over the archive |
 
 Control-plane records—manifests, maintenance logs, import reports, and checksums—support audit and repair. They should not compete with actual memory content during ordinary recall.
+
+## Before retrieval: re-anchor time and warm context
+
+"Use hot context first" assumes there is hot context. A new Session has none, and even inside a long-lived Session the assistant cannot tell whether the previous message arrived a minute or a night ago. Retrieval fixes neither: the current time is not in any stored record, and the last conversation has usually not reached curated memory yet.
+
+Two small, user-triggered layers close the gap:
+
+| Layer | Answers | Source |
+| --- | --- | --- |
+| Time sync | What time is it, and how long since the previous message? | Measured by the host from transcript timestamps |
+| Session handoff | What was the mood, what was left open, which phrases were shared? | A small packet the previous Session wrote before it ended |
+
+They cover each other's blind spot. Inside a Session the gap comes from the transcript. A new Session has no previous message, so the handoff's write time supplies the gap across Sessions.
+
+Rules that carry over to any implementation:
+
+- The host measures elapsed time; the assistant never infers it. When measurement fails, say so.
+- When locating the previous user message, skip user-role items the host injected itself — instructions, environment context, skill payloads — or the first turn always measures zero.
+- Only the model can summarize, and only the host knows the Session identity. Let the host supply the id, and validate the packet before it overwrites the previous one.
+- Keep one overwritten packet, outside version control and outside the retrieval index. It is short-lived warm context, not a second archive.
+- Record mood as an observation, not an instruction. The user's state in the new Session wins; after a long gap, carry unfinished matters but not tone.
+- "The previous session file" is not "the previous conversation". Other projects, subagents, and reviewer threads share the same directory; report later activity rather than asserting there was none.
+- Make every outcome explicit — unavailable, omitted, error — so that silence can only mean the mechanism did not run. A host may silently stop running a hook whose definition changed until someone re-trusts it.
+
+A Codex implementation with tests lives in [`kits/codex-session-continuity`](../kits/codex-session-continuity/README.md).
 
 ## Step 1: Choose RETRIEVE, ASK, or SKIP
 

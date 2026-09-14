@@ -1,0 +1,7 @@
+interface:
+  display_name: "Time Sync"
+  short_description: "Sync local time and elapsed gap after returning"
+  default_prompt: "Use $time-sync to synchronize the current local time and elapsed gap after I return."
+
+policy:
+  allow_implicit_invocation: false

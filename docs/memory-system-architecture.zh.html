@@ -24,12 +24,13 @@
         <a href="#revival">03 · 冷恢复</a>
         <a href="#layers">04 · Ownership</a>
         <a href="#time">05 · 时间状态</a>
-        <a href="#workflow">06 · 证据升级</a>
-        <a href="#evaluation">07 · Evaluation</a>
-        <a href="#layout">08 · 参考目录</a>
-        <a href="#fidelity">09 · Fidelity</a>
-        <a href="#contracts">10 · 检索契约</a>
-        <a href="#boundaries">11 · 运行边界</a>
+        <a href="#continuity">06 · 会话连续性</a>
+        <a href="#workflow">07 · 证据升级</a>
+        <a href="#evaluation">08 · Evaluation</a>
+        <a href="#layout">09 · 参考目录</a>
+        <a href="#fidelity">10 · Fidelity</a>
+        <a href="#contracts">11 · 检索契约</a>
+        <a href="#boundaries">12 · 运行边界</a>
       </nav>
     </aside>
 
@@ -140,6 +141,26 @@
         <div class="callout"><div aria-hidden="true">◷</div><p><strong>可测试规则：</strong>注入 <span class="mono">as_of</span>；基础排名保持不变，只在 checkpoint 已过且没有后续确认时附加解释性时间标签。</p></div>
       </section>
 
+      <section id="continuity">
+        <div class="section-head">
+          <h2>助手自己的时钟，和一个有温度的开场</h2>
+          <p>存储的事实把时间当作证据，助手自己却没有时间感：分不清一分钟和一整夜，新 Session 也总是从零开始。两层很小、由用户手动触发的机制，在任何检索之前先把它对齐。</p>
+        </div>
+        <div class="layer-grid">
+          <article class="card"><span class="tag">时间 · 测量</span><h3>Time sync</h3><p>本地时间，以及距离上一条用户消息的时间差，由宿主根据 transcript 时间戳测量。宿主自己注入的 user 角色内容会被跳过，否则第一轮永远测出 0。测量失败时助手直接说明，绝不估算。</p></article>
+          <article class="card"><span class="tag">状态 · 交接</span><h3>Session handoff</h3><p>离开前由模型写下情绪、最多两件未完成的事、最多三个共同说法和最后的话题。宿主提供 Session id，唯一一个带校验的命令覆盖写入这一份小包。</p></article>
+          <article class="card"><span class="tag">组合</span><h3>两层互相补位</h3><p>同一个 Session 里，时间差来自 transcript；新 Session 没有上一条消息，就由 handoff 的写入时间提供跨 Session 的时间差。小包每个 Session 只注入一次。</p></article>
+          <article class="card"><span class="tag">有边界</span><h3>热上下文，不是第二套归档</h3><p>只有一份、每次覆盖，不进版本控制，也不进检索索引。情绪记成观察而不是指令；超过七天，只跟进未完成的事，不接上次的语气。</p></article>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>情境</th><th>注入内容</th><th>预期行为</th></tr></thead><tbody>
+          <tr><td>同一个 Session 里隔了一夜回来</td><td>TemporalSync gap=10h 4m</td><td>把"早上好"理解为回来了，而不是接着刚才</td></tr>
+          <tr><td>新 Session 的第一条消息</td><td>没有上一条消息；handoff 的 age 和小包</td><td>在合适的时候接上未完成的事或共同说法，不复述小包</td></tr>
+          <tr><td>handoff 之后还有其他对话</td><td>later_activity</td><td>不把小包当作最近一次对话</td></tr>
+          <tr><td>没有小包，或小包无效</td><td>unavailable / error</td><td>什么都不带，也不猜</td></tr>
+        </tbody></table></div>
+        <div class="callout"><div aria-hidden="true">◐</div><p><strong>一片空白只能意味着出了问题：</strong>其他每种结果都会显式说明。宿主可能在 hook 定义被修改后悄悄停止运行它，直到有人重新信任，唯一的症状就是 context 缺失。可以直接复制 <a href="../kits/codex-session-continuity/README.zh.md">Codex 套件</a>。</p></div>
+      </section>
+
       <section id="workflow">
         <div class="section-head">
           <h2>证据升级工作流</h2>
@@ -232,7 +253,7 @@
       <section id="boundaries">
         <div class="section-head"><h2>让尚未解决的边界看得见。</h2><p>参考架构应明确区分已有机制与实验设想。</p></div>
         <div class="layer-grid">
-          <article class="card"><span class="tag">已落地机制</span><h3>可观察、有范围的保证</h3><p>Build 标签检查、hint 只警告、旧决策附带直接后继、完整 fidelity 标签匹配、writer 设置权限、按规则排除 control-plane、连续短语排序，以及会过期且自带理由的 trace，均有对应实现。Pinecone 本身发布文档，不包含检索引擎。</p></article>
+          <article class="card"><span class="tag">已落地机制</span><h3>可观察、有范围的保证</h3><p>Build 标签检查、hint 只警告、旧决策附带直接后继、完整 fidelity 标签匹配、writer 设置权限、按规则排除 control-plane、连续短语排序，以及会过期且自带理由的 trace，均有对应实现。会话连续性以一个带测试的小型 Codex 套件发布；除此之外，Pinecone 发布的是文档，不包含检索引擎。</p></article>
           <article class="card"><span class="tag">工作副本</span><h3>权限不会随 Git 传播</h3><p>Owner-only mode 需要 writer 落实，并在检出或恢复后检查。冻结输入的 advisory 保持可见，但不使检查失败，也不授权自动修复。目录软链接隔离仍有已知限制。</p></article>
           <article class="card"><span class="tag">恢复 · 已实测</span><h3>没恢复过的备份只是猜测</h3><p>只存在一份的目录会逐个文件与外部副本比对，并且做过一次恢复演练。刷新仍是手动的，所以诚实的说法是「截至上次检查为止已验证」——而这正是检查会报告的内容。</p></article>
           <article class="card"><span class="tag">实验 · 待推进</span><h3>不把提案写成已实现功能</h3><p>独立 challenge runner 与校准后的证据标签仍是后续工作。Retrieval intent 解析已对照一个尚未达标的上限做测量，把这件事说出来本身就是重点。时间 checkpoint 逻辑有合成覆盖，不代表已有真实检查点。</p></article>

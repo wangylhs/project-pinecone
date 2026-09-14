@@ -242,6 +242,36 @@ prove the signal did not simply become a second source of noise:
 Extend it with a `SKIP` control: an unrelated question containing one of the same
 words ("what does custard mean?") must not open retrieval at all.
 
+## Seventh candidate evaluation: back after a night away
+
+An assistant cannot perceive elapsed time, and a new Session starts without the
+warmth of the last one. This case exercises both continuity layers with the
+Aurora Ridge crew.
+
+```text
+Evening, Session A:  the crew coins "velvet teapot protocol"; the snow gauge
+                     still needs recalibrating; the user sends $handoff
+Next morning:        Session B opens with "$time-sync good morning"
+```
+
+| Variant | Expected |
+| --- | --- |
+| Same Session, a night later | Measured gap; "good morning" reads as a return |
+| New Session, first message | No preceding message; the handoff's age supplies the gap; the phrase and the open task are available |
+| First turn holds only host-injected instructions | Not measured against them: no preceding message |
+| Second `$time-sync` in Session B | Packet omitted as already provided |
+| `$time-sync` back in Session A | Packet omitted: it was written there |
+| Another conversation in the repository after the handoff | `later_activity`; the packet is not the latest conversation |
+| A reviewer thread or another repository active after the handoff | Not flagged |
+| Handoff eight days old | `long_gap`: open matters carried, tone not resumed |
+| Four shared phrases, or a packet over budget | Rejected at write time; the previous packet is unchanged |
+| Hook definition edited and not re-trusted | No context at all; the assistant names the likely cause instead of guessing |
+
+The last row is the one a test suite cannot reach: every script passes when run
+by hand while the host is not running it. It is why every other outcome states
+itself. The kit's tests in `kits/codex-session-continuity/tests` cover every
+other row.
+
 ## Visual map: the Memory Graph Explorer
 
 `docs/memory-graph-explorer.html` is the first answer to "how should the visual
